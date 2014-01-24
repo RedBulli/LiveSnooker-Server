@@ -1,9 +1,19 @@
 {
-  "name": "LiveSnooker-Server"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "express": "latest",
-      "redis": "latest"
-  }
+  "name": "LiveSnooker-Server",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "latest",
+    "redis": "latest"
+  },
+  "engines": {
+    "node": "0.10.20"
+  },
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RedBulli/LiveSnooker-Server.git"
+  },
+  "author": "Sampo Verkasalo",
+  "licence": "MIT"
 }
