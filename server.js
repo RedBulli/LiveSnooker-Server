@@ -1,16 +1,20 @@
 var listen_port = Number(process.env.PORT || 5000);
 var express = require('express'),
-    publisherClient = undefined;
     redis = require("redis");
+var publisherClient = createClient();
 
-if (process.env.REDISTOGO_URL) {
-  var rtg   = require("url").parse(process.env.REDISTOGO_URL);
-  publisherClient = redis.createClient(rtg.port, rtg.hostname);
-  publisherClient.auth(rtg.auth.split(":")[1]);
-  console.log('heroku redis');
-} else {
-  publisherClient = redis.createClient();
+function createClient() {
+  if (process.env.REDISTOGO_URL) {
+    var rtg   = require("url").parse(process.env.REDISTOGO_URL);
+    client = redis.createClient(rtg.port, rtg.hostname);
+    client.auth(rtg.auth.split(":")[1]);
+    console.log('heroku redis');
+  } else {
+    client = redis.createClient();
+  }
+  return client;
 }
+
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -36,7 +40,7 @@ app.get('/framestream', function(req, res) {
   req.socket.setTimeout(Infinity);
 
   var messageCount = 0;
-  var subscriber = redis.createClient();
+  var subscriber = createClient();
 
   subscriber.subscribe('updates');
 
