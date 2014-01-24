@@ -1,4 +1,4 @@
-var LISTEN_PORT = 8000;
+var listen_port = Number(process.env.PORT || 5000);
 var express = require('express'),
     publisherClient = undefined;
     redis = require("redis");
@@ -70,6 +70,6 @@ app.post('/update_frame', function(req, res) {
   res.end();
 });
 
-app.listen(LISTEN_PORT);
-console.log('Express server listening on port %d', LISTEN_PORT);
+app.listen(listen_port);
+console.log('Express server listening on port %d', listen_port);
 
