@@ -7,6 +7,7 @@ if (process.env.REDISTOGO_URL) {
   var rtg   = require("url").parse(process.env.REDISTOGO_URL);
   publisherClient = redis.createClient(rtg.port, rtg.hostname);
   publisherClient.auth(rtg.auth.split(":")[1]);
+  console.log('heroku redis');
 } else {
   publisherClient = redis.createClient();
 }
