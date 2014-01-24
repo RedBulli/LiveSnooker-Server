@@ -1,7 +1,15 @@
 var LISTEN_PORT = 8000;
 var express = require('express'),
-    redis   = require('redis'),
-    publisherClient = redis.createClient();
+    publisherClient = undefined;
+    redis = require("redis");
+
+if (process.env.REDISTOGO_URL) {
+  var rtg   = require("url").parse(process.env.REDISTOGO_URL);
+  publisherClient = redis.createClient(rtg.port, rtg.hostname);
+  redis.auth(rtg.auth.split(":")[1]);
+} else {
+  publisherClient = redis.createClient();
+}
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');

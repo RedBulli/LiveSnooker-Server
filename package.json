@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "express": "latest",
-    "redis": "latest"
+    "redis": "latest",
+    "hiredis": "latest"
   },
   "engines": {
     "node": "0.10.20"
