@@ -2,13 +2,13 @@ var listen_port = Number(process.env.PORT || 5000);
 var express = require('express'),
     redis = require("redis");
 var publisherClient = createClient();
+var currentFrame = '{"p1": "Sampo", "p2": "Mikko", "points1": 0, "points2": 0, "frames1": 0, "frames2": 0, "bestOf": 7}';
 
 function createClient() {
   if (process.env.REDISTOGO_URL) {
     var rtg   = require("url").parse(process.env.REDISTOGO_URL);
     client = redis.createClient(rtg.port, rtg.hostname);
     client.auth(rtg.auth.split(":")[1]);
-    console.log('heroku redis');
   } else {
     client = redis.createClient();
   }
@@ -48,6 +48,10 @@ app.get('/framestream', function(req, res) {
     console.log('Redis Error: ' + err);
   });
 
+  subscriber.on('subscribe', function(err) {
+    publisherClient.publish('updates', currentFrame);
+  });
+
   subscriber.on('message', function(channel, message) {
     messageCount++;
     res.write('id: ' + messageCount + '\n');
@@ -68,10 +72,10 @@ app.get('/framestream', function(req, res) {
 });
 
 app.post('/update_frame', function(req, res) {
-  var str = JSON.stringify(req.body);
-  publisherClient.publish('updates', str);
+  var currentFrame = JSON.stringify(req.body);
+  publisherClient.publish('updates', currentFrame);
   res.writeHead(200, {'Content-Type': 'text/html'});
-  res.write('Published: ' + str);
+  res.write('Published: ' + currentFrame);
   res.end();
 });
 
