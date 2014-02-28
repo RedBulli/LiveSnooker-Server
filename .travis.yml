@@ -1,6 +1,10 @@
 language: node_js
 node_js:
-- '0.10.25'
+  - '0.10.25'
+
+before_install:
+  - npm config set ca ""
+
 deploy:
   provider: heroku
   api_key:
