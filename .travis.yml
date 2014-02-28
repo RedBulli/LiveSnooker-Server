@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+- '0.10'
+deploy:
+  provider: heroku
+  api_key:
+    secure: gNACUPqJElwsZkUYIlkgotWqeOCndsJzbJreq1CxMGRg3LfZJpga2c6bVwfUF1cxHgQfJN+T5JUsjnzN/FMdqX8xDv1inoQ8hgqOLfkfdTJ5eTpx0sjVOrKabs4LcOlhRAShlpMkxAhDnAy3mx+KgdOKohfGMI4+jVQLhvwm3TE=
+  app: livesnooker-server
+  on:
+    repo: RedBulli/LiveSnooker-Server
