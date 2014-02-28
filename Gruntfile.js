@@ -45,7 +45,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('recompile', ['clean:js', 'coffee']);
+  grunt.registerTask('compile', ['clean:js', 'coffee']);
   grunt.registerTask('cleanjs', ['clean:js']);
 
   grunt.registerTask('test', ['test:unit', 'test:integration']);

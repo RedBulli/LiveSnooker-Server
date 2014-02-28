@@ -32,6 +32,7 @@
   "licence": "MIT",
   "scripts": {
     "test": "grunt test",
+    "prestart": "grunt compile",
     "start": "node build/server.js"
   }
 }
