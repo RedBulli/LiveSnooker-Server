@@ -1,28 +1,28 @@
 {
   "name": "LiveSnooker-Server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "dependencies": {
-    "express": "3.4.8",
-    "redis": "0.10.0"
+    "express": "latest",
+    "body-parser": "latest",
+    "redis": "latest"
   },
   "devDependencies": {
-    "grunt": "0.4.2",
-    "grunt-cli": "0.1.13",
-    "grunt-contrib-coffee": "0.9.0",
-    "load-grunt-tasks": "~0.3.0",
-    "mocha": "~1.17.1",
-    "chai": "~1.9.0",
-    "supertest": "~0.9.0",
-    "grunt-contrib-watch": "~0.5.3",
-    "grunt-mocha-test": "~0.9.0",
-    "grunt-notify": "~0.2.17",
-    "grunt-contrib-clean": "~0.5.0",
-    "superagent": "~0.16.0",
-    "cors-tester": "~0.1.0"
+    "grunt": "latest",
+    "grunt-cli": "latest",
+    "grunt-contrib-coffee": "latest",
+    "load-grunt-tasks": "latest",
+    "mocha": "latest",
+    "chai": "latest",
+    "supertest": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-mocha-test": "latest",
+    "grunt-notify": "latest",
+    "grunt-contrib-clean": "latest",
+    "superagent": "latest"
   },
   "engines": {
-    "node": "0.10.20"
+    "node": "0.10.26"
   },
   "repository": {
     "type": "git",

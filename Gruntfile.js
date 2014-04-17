@@ -49,11 +49,17 @@ module.exports = function(grunt) {
   grunt.registerTask('cleanjs', ['clean:js']);
 
   grunt.registerTask('test', ['test:unit', 'test:integration']);
-  grunt.registerTask('test:unit', ['coffee', 'mochaTest:unit', 'notify:unit_tests']);
-  grunt.registerTask('test:integration', ['coffee', 'mochaTest:integration', 'notify:unit_tests']);
+  grunt.registerTask(
+    'test:unit', 
+    ['compile', 'mochaTest:unit', 'notify:unit_tests']
+  );
+  grunt.registerTask(
+    'test:integration',
+    ['compile', 'mochaTest:integration', 'notify:unit_tests']
+  );
 
   // Default task(s).
   grunt.registerTask('default', ['coffee', 'watch']);
-  grunt.registerTask('test', ['coffee', 'mochaTest']);
+  grunt.registerTask('test', ['compile', 'mochaTest']);
 
 };
