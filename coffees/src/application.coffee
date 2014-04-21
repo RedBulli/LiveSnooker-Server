@@ -37,7 +37,8 @@ createApp = () ->
     bodyParser.json() request, response, (err) ->
       if err
         next new errors.BadRequest {error: 'Invalid JSON'}
-      next(err)
+      else
+        next()
 
   app = express()
   app.use allowCrossDomain
