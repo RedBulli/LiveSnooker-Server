@@ -1,5 +1,7 @@
 class HttpError extends Error
   constructor: (@message) ->
+  toString: () ->
+    return 'HttpError ' + @statusCode
 
 class BadRequest extends HttpError
   statusCode: 400

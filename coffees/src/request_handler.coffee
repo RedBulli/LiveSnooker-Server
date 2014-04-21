@@ -4,7 +4,7 @@ module.exports = (request, response, next) ->
   throwParameterError = (parameter, message) ->
       content = {error: {}}
       content.error[parameter] = message
-      throw new errors.BadRequest(content)
+      throw new errors.BadRequest content
 
   requireParameter = (parameter) ->
     if parameter of request.body
@@ -13,7 +13,7 @@ module.exports = (request, response, next) ->
       throwParameterError parameter, 'Required parameter'
 
   requireInt = (parameter) ->
-    value = requireParameter(parameter)
+    value = requireParameter parameter
     if isNaN value
       throwParameterError parameter, 'Should be an integer'
     else

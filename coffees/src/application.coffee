@@ -4,6 +4,7 @@ module.exports.listen = (port) ->
 createApp = () ->
   express = require 'express'
   bodyParser = require 'body-parser'
+  errors = require './errors'
 
   allowCrossDomain = (request, response, next) ->
     response.header 'Access-Control-Allow-Origin', '*'
@@ -26,12 +27,16 @@ createApp = () ->
     next()
 
   serverErrorHandling = (err, request, response, next) ->
-    response.send 500
+    if err
+      if err instanceof errors.HttpError
+        response.send err.statusCode, err.message
+      else
+        response.send 500
 
   jsonParser = (request, response, next) ->
     bodyParser.json() request, response, (err) ->
       if err
-        response.send 400, {error: 'Invalid JSON'}
+        next new errors.BadRequest {error: 'Invalid JSON'}
       next(err)
 
   app = express()
@@ -39,8 +44,9 @@ createApp = () ->
   app.use defaultHeaders
   app.use jsonParser
   app.use require './request_handler'
-  app.use serverErrorHandling
 
   require('./api')(app)
+
+  app.use serverErrorHandling
 
   return app
