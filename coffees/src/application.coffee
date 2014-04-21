@@ -36,7 +36,7 @@ createApp = () ->
   jsonParser = (request, response, next) ->
     bodyParser.json() request, response, (err) ->
       if err
-        next new errors.BadRequest {error: 'Invalid JSON'}
+        next new errors.BadRequest 'Invalid JSON'
       else
         next()
 

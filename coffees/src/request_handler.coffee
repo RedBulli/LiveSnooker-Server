@@ -1,23 +1,27 @@
 errors = require './errors'
 
 module.exports = (request, response, next) ->
-  throwParameterError = (parameter, message) ->
-      content = {error: {}}
-      content.error[parameter] = message
-      throw new errors.BadRequest content
+  createParamObject = (parameter, message) ->
+      content = {}
+      content[parameter] = message
+      return content
 
   requireParameter = (parameter) ->
     if parameter of request.body
       return request.body[parameter]
     else
-      throwParameterError parameter, 'Required parameter'
+      throw new errors.BadRequest createParamObject(
+        parameter, 'Required parameter'
+      )
 
   requireInt = (parameter) ->
     value = requireParameter parameter
-    if isNaN value
-      throwParameterError parameter, 'Should be an integer'
-    else
+    if not isNaN value
       return value
+    else
+      throw new errors.BadRequest createParamObject(
+        parameter, 'Should be an integer'
+      )
 
   request.handler = {
     requireParameter: requireParameter,
