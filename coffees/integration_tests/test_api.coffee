@@ -8,11 +8,15 @@ describe 'rest api', ->
     server = require('./../src/application').listen 4000
 
   post = (url, content) ->
-    request server
+    request_var = request server
       .post url
-      .send content
-      .set 'Content-Type', 'application/json'
       .set 'Accept', 'application/json'
+
+    if content
+      request_var.send content
+      request_var.set 'Content-Type', 'application/json'
+
+    return request_var
 
   describe 'POST /pot', ->
     url = '/pot'
@@ -24,7 +28,7 @@ describe 'rest api', ->
       response.expect 204, done
 
     it 'should enforce ball_value to be an int', (done) ->
-      response = post url, {ball_value: "one"}
+      response = post url, {ball_value: 'one'}
       response.expect {error: {
           ball_value: 'Should be an integer'
         }
@@ -43,6 +47,13 @@ describe 'rest api', ->
       response = post url, '{unquoted_key_is_not_allowed_in_json: 1}'
       response.expect {error: 'Invalid JSON'}
       response.expect 400, done
+
+  describe 'POST /missed_pot', ->
+    url = '/missed_pot'
+
+    it 'should exist', (done) ->
+      response = post url
+      response.expect 204, done
 
   after ->
     server.close()
