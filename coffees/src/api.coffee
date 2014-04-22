@@ -1,12 +1,10 @@
-errors = require './errors'
+forms = require './forms'
 
 module.exports = (app) ->
   app.post '/pot', (request, response) ->
-    ball_value = request.handler.requireInt 'ball_value'
-    if ball_value < 1 or ball_value > 7
-      throw new errors.BadRequest {
-        ball_value: 'Should be an integer between 1-7'
-      }
+    form = new forms.PotForm(request)
+    form.validate()
+    console.log form.values
     response.send 204
 
   app.post '/missed_pot', (request, response) ->
