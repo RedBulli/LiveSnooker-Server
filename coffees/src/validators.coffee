@@ -18,6 +18,8 @@ class Integer
     @max = getProperty(options, 'max', Infinity)
 
   validate: (value) ->
+    if value == null || value == undefined
+      return
     if isNaN(value)
       throw new ValidationError 'Should be an integer'
     if value < @min || value > @max
@@ -26,6 +28,8 @@ class Integer
       )
 
   parser: (value) ->
+    if value == undefined || null
+      return null
     return parseInt(value)
 
 module.exports = {

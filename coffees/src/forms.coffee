@@ -3,7 +3,7 @@ errors = require './errors'
 
 class Form
   constructor: (@request) ->
-  values: {},
+    @values = {}
   validate: () ->
     try
       for key, value of @fields
@@ -33,9 +33,9 @@ class PotForm extends Form
   }
 
 class SafetyForm extends Form
-  fields: [
-    ball_value: [new validators.Integer({min: 1, max: 7})],
-  ]
+  fields: {
+    pot: [new validators.Integer({min: 1, max: 7})],
+  }
 
 module.exports = {
   PotForm: PotForm,
