@@ -44,7 +44,6 @@ createApp = () ->
   app.use allowCrossDomain
   app.use defaultHeaders
   app.use jsonParser
-  app.use require './request_handler'
 
   require('./api')(app)
 
