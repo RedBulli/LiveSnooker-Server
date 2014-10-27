@@ -12,3 +12,4 @@ deploy:
   app: livesnooker-server
   on:
     repo: RedBulli/LiveSnooker-Server
+  strategy: git
