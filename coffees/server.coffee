@@ -1,1 +1,2 @@
-app = require('./src/application').listen(5000)
+port = process.env.PORT || 5000
+app = require('./src/application').listen(port)
