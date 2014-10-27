@@ -1,15 +1,26 @@
 forms = require './forms'
+errors = require './errors'
+validators = require './forms/validators'
+
+getValidatedFormValues = (form, request) ->
+  try
+    form.getValidatedValues(request.body)
+  catch err
+    if err instanceof validators.ValidationError
+      throw new errors.BadRequest err.message
+    else
+      throw err
 
 module.exports = (app) ->
   app.post '/pot', (request, response) ->
-    form = new forms.PotForm(request)
-    form.validate()
-    response.send 204
+    form = new forms.PotForm()
+    values = getValidatedFormValues(form, request)
+    response.sendStatus 204
 
   app.post '/missed_pot', (request, response) ->
-    response.send 204
+    response.sendStatus 204
 
   app.post '/safety', (request, response) ->
-    form = new forms.SafetyForm(request)
-    form.validate()
-    response.send 204
+    form = new forms.SafetyForm()
+    values = getValidatedFormValues(form, request)
+    response.sendStatus 204

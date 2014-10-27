@@ -13,12 +13,12 @@ createApp = () ->
       'GET,PUT,POST,DELETE,OPTIONS'
     )
     response.header(
-      'Access-Control-Allow-Headers', 
+      'Access-Control-Allow-Headers',
       'Content-Type, Content-Length, X-Requested-With'
     )
     #response.header('Access-Control-Allow-Credentials', 'true')
     if 'OPTIONS' == request.method
-      response.send 200
+      response.sendStatus 200
     else
       next()
 
@@ -29,9 +29,10 @@ createApp = () ->
   serverErrorHandling = (err, request, response, next) ->
     if err
       if err instanceof errors.HttpError
-        response.send err.statusCode, err.message
+        response.status(err.statusCode).send(err.message)
       else
-        response.send 500
+        console.error err
+        response.sendStatus 500
 
   jsonParser = (request, response, next) ->
     bodyParser.json() request, response, (err) ->

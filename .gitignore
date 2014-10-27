@@ -18,3 +18,4 @@ build
 
 Blog
 temp_src
+*.sublime*

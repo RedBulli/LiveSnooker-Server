@@ -1,28 +1,31 @@
 {
   "name": "LiveSnooker-Server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "dependencies": {
     "express": "latest",
     "body-parser": "latest",
-    "redis": "latest"
-  },
-  "devDependencies": {
+    "redis": "latest",
+    "underscore": "^1.7.0",
     "grunt": "latest",
     "grunt-cli": "latest",
     "grunt-contrib-coffee": "latest",
-    "load-grunt-tasks": "latest",
-    "mocha": "latest",
+    "grunt-contrib-clean": "latest",
+    "load-grunt-tasks": "latest"
+  },
+  "devDependencies": {
     "chai": "latest",
-    "supertest": "latest",
+    "grunt-concurrent": "^1.0.0",
     "grunt-contrib-watch": "latest",
     "grunt-mocha-test": "latest",
+    "grunt-nodemon": "^0.3.0",
     "grunt-notify": "latest",
-    "grunt-contrib-clean": "latest",
-    "superagent": "latest"
+    "mocha": "latest",
+    "superagent": "latest",
+    "supertest": "latest"
   },
   "engines": {
-    "node": "0.10.26"
+    "node": "0.10.29"
   },
   "repository": {
     "type": "git",
@@ -31,8 +34,8 @@
   "author": "Sampo Verkasalo",
   "licence": "MIT",
   "scripts": {
-    "test": "grunt test",
-    "prestart": "grunt compile",
+    "test": "node_modules/grunt-cli/bin/grunt test",
+    "prestart": "node_modules/grunt-cli/bin/grunt compile",
     "start": "node build/server.js"
   }
 }
