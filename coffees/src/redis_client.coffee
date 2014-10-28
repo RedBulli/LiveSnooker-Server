@@ -1,4 +1,4 @@
-exports.createClient = () ->
+module.exports = ->
   redis = require('redis')
   if (process.env.REDISTOGO_URL)
     rtg  = require('url').parse(process.env.REDISTOGO_URL)

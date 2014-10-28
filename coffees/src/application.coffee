@@ -47,6 +47,7 @@ createApp = () ->
   app.use jsonParser
 
   require('./api')(app)
+  require('./streaming_api')(app)
 
   app.use serverErrorHandling
 

@@ -10,6 +10,6 @@ module.exports = class Form
     parser = -> value
     for validator in @fields[key]
       validator.validate(value, key)
-      if validator.parser
+      if validator.parse
         parser = validator.parse
     parser value

@@ -11,10 +11,18 @@ getValidatedFormValues = (form, request) ->
     else
       throw err
 
+frameState =
+  id: 'frameID'
+  potted: 0
+
 module.exports = (app) ->
+  publisherClient = require('./redis_client')()
+
   app.post '/pot', (request, response) ->
     form = new forms.PotForm()
     values = getValidatedFormValues(form, request)
+    frameState.potted += values.ball_value
+    publisherClient.publish 'updates', JSON.stringify(frameState)
     response.sendStatus 204
 
   app.post '/missed_pot', (request, response) ->

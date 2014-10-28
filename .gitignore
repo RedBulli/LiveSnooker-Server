@@ -18,4 +18,6 @@ build
 
 Blog
 temp_src
-*.sublime*
+*.sublime-project
+*.sublime-workspace
+.dpl

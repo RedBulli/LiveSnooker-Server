@@ -33,3 +33,18 @@ describe 'Form', ->
     expect(-> form.getValidatedValues(requestBody)).to.throw ValidationError
 
   it 'if one validator has a parse function, it is used', ->
+    form = new Form()
+    requestBody =
+      integer: "1"
+    form.fields =
+      integer: [
+        {
+          validate: ->
+          parse: (value) ->
+            parseInt(value)
+        },
+        {
+          validate: ->
+        }
+      ]
+    expect(form.getValidatedValues(requestBody)).to.eql integer: 1
