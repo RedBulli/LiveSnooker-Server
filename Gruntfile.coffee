@@ -31,10 +31,12 @@ module.exports = (grunt) ->
     mochaTest:
       options:
         reporter: 'spec'
-        require:
+        require: [
           ->
             global.rootRequire = (name) ->
               require(__dirname + '/build/src/' + name)
+          'build/fixtures.js'
+        ]
       unit:
         src: ['build/unit_tests/**/*.js']
       integration:

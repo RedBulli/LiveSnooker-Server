@@ -1,8 +1,11 @@
 module.exports = class Form
   getValidatedValues: (requestBody) ->
-    values = {}
-    for key, value of @fields
-      values[key] = @getValidatedValue(requestBody, key)
+    values = if @parentForm
+      @parentForm.getValidatedValues(requestBody)
+    else
+      {}
+    for key, validators of @fields
+      values[key] = @getValidatedValue(requestBody, key, validators)
     values
 
   getValidatedValue: (requestBody, key) ->

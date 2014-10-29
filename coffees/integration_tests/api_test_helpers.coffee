@@ -40,9 +40,7 @@ module.exports = (requestHandler) ->
         it 'returns 400 with no content', (done) ->
           expectedErrorMessage = {}
           expectedErrorMessage[options.parameter] = 'Required parameter'
-          response = requestHandler options.url
-          response.expectBadRequest expectedErrorMessage
-          response = requestHandler options.url, {}
+          response = requestHandler options.url, options.otherParams
           response.expectBadRequest expectedErrorMessage, done
 
       it 'returns 400 if invalid json content', (done) ->

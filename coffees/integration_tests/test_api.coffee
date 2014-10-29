@@ -27,33 +27,16 @@ describe 'rest api', ->
   after ->
     server.close()
 
-  describe 'POST /pot', ->
-    url = '/pot'
+  describe 'POST /action', ->
+    url = '/action'
 
-    helpers.assertIntegerParameter
-      parameter: 'ball_value'
-      url: url
-      min: 1
-      max: 7
-      required: true
-
-  describe 'POST /missed_pot', ->
-    url = '/missed_pot'
-
-    it 'returns 204', (done) ->
-      response = post url
-      response.expect 204, done
-
-  describe 'POST /safety', ->
-    url = '/safety'
-
-    it 'does not require any parameters', (done) ->
-      response = post url
-      response.expect 204, done
-
-    helpers.assertIntegerParameter
-      parameter: 'pot'
-      url: url
-      min: 1
-      max: 7
-      required: false
+    describe 'parameter points', ->
+      validFormData = fixtures.actionFormData()
+      delete validFormData.points
+      helpers.assertIntegerParameter
+        otherParams: validFormData
+        parameter: 'points'
+        url: url
+        min: 0
+        max: 16
+        required: true

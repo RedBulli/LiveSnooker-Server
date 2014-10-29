@@ -7,5 +7,6 @@ class HttpError extends Error
 class BadRequest extends HttpError
   statusCode: 400
 
-module.exports.HttpError = HttpError
-module.exports.BadRequest = BadRequest
+module.exports = 
+  HttpError: HttpError
+  BadRequest: BadRequest

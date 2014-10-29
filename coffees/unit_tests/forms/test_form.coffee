@@ -3,7 +3,7 @@ Form = rootRequire 'forms/form'
 ValidationError = rootRequire('forms/validators/validation_error')
 
 describe 'Form', ->
-  succeedingValidator = validate: -> true
+  succeedingValidator = validate: ->
   failingValidator = validate: -> throw new ValidationError()
 
   it 'populates the values attribute from field validations', ->
@@ -40,11 +40,8 @@ describe 'Form', ->
       integer: [
         {
           validate: ->
-          parse: (value) ->
-            parseInt(value)
+          parse: (value) -> parseInt(value)
         },
-        {
-          validate: ->
-        }
+        { validate: -> }
       ]
     expect(form.getValidatedValues(requestBody)).to.eql integer: 1

@@ -1,7 +1,9 @@
-module.exports = class ValidationError extends Error
+BadRequest = require('./../../errors').BadRequest
+
+module.exports = class ValidationError extends BadRequest
   constructor: (message, key) ->
+    validationMessage = message
     if key
-      @message = {}
-      @message[key] = message
-    else
-      @message = message
+      validationMessage = {}
+      validationMessage[key] = message
+    super(validationMessage)
