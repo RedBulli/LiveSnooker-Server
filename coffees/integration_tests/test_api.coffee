@@ -21,8 +21,10 @@ describe 'rest api', ->
 
   helpers = apiTesthelpers(post)
 
-  before ->
-    server = rootRequire('application').listen 4000
+  before (done) ->
+    rootRequire('application').listen 4000, (serverApp) ->
+      server = serverApp
+      done()
 
   after ->
     server.close()

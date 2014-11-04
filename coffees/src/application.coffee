@@ -1,7 +1,8 @@
-module.exports.listen = (port) ->
-  createApp().listen port
+module.exports.listen = (port, callback) ->
+  createApp (app) ->
+    callback(app.listen port)
 
-createApp = () ->
+createApp = (callback) ->
   express = require 'express'
   bodyParser = require 'body-parser'
   errors = require './errors'
@@ -45,10 +46,8 @@ createApp = () ->
   app.use allowCrossDomain
   app.use defaultHeaders
   app.use jsonParser
-
-  require('./api')(app)
   require('./streaming_api')(app)
 
-  app.use serverErrorHandling
-
-  return app
+  require('./api') app, ->
+    app.use serverErrorHandling
+    callback(app)

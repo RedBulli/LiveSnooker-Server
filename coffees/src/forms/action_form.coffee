@@ -30,8 +30,10 @@ module.exports = class ActionForm extends Form
   getPopulatedModel: (requestBody) ->
     validatedValues = @getValidatedValues(requestBody)
     action = new Action()
-    action.frame = new Frame() #Frame.find(validatedValues.frame_id)
-    action.player = new Player() # Player.find(validatedValues.player_id)
+    #Frame.find(validatedValues.frame_id)
+    action.frame = new Frame({id: validatedValues.frame_id})
+    # Player.find(validatedValues.player_id)
+    action.player = new Player({id: validatedValues.player_id})
     action.attempt = validatedValues.attempt
     action.result = validatedValues.result
     action.points = validatedValues.points

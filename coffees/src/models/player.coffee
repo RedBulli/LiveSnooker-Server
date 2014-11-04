@@ -1,2 +1,2 @@
 module.exports = class Player
-  constructor: ->
+  constructor: ({@id})->

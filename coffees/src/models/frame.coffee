@@ -1,4 +1,4 @@
 module.exports = class Frame
-  constructor: (@framePlayers) ->
-    @winner = null
-    @inTurn = @framePlayers?[0]
+  constructor: ({@id}) ->
+    #@winner = null
+    #@inTurn = @framePlayers?[0]
