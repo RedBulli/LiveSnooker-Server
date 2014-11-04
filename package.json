@@ -20,6 +20,7 @@
     "chai": "latest",
     "grunt-concurrent": "^1.0.0",
     "grunt-contrib-watch": "latest",
+    "grunt-env": "^0.4.2",
     "grunt-mocha-test": "latest",
     "grunt-nodemon": "^0.3.0",
     "grunt-notify": "latest",
