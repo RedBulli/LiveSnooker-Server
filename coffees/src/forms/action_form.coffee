@@ -35,6 +35,6 @@ module.exports = class ActionForm extends Form
     # Player.find(validatedValues.player_id)
     action.player = new Player({id: validatedValues.player_id})
     action.attempt = validatedValues.attempt
-    action.result = validatedValues.result
+    action.foul = validatedValues.foul || false
     action.points = validatedValues.points
     action

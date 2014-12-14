@@ -26,7 +26,7 @@ global.fixtures =
       frame: data["frame"] || fixtures.Frame()
       player: data["player"] || fixtures.Player()
       attempt: "pot"
-      result: "pot"
+      foul: false
       points: 7
     data = _.extend defaults, data
     new Action data
