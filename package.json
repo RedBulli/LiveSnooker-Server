@@ -10,9 +10,11 @@
     "grunt-cli": "latest",
     "grunt-contrib-clean": "latest",
     "grunt-contrib-coffee": "latest",
+    "grunt-env": "^0.4.2",
     "load-grunt-tasks": "latest",
     "mongodb": "^1.4.19",
     "mongoose": "^3.8.18",
+    "node-oauth": "^0.1.3",
     "redis": "latest",
     "underscore": "^1.7.0"
   },
