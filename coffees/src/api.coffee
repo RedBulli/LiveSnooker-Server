@@ -13,3 +13,11 @@ module.exports = (app, callback) ->
         response.sendStatus 204
 
     callback()
+
+  require('./controllers/passport')(app)
+
+  app.get '/', (req, res) ->
+    res.send('Nuthing to see')
+
+  app.get '/login', (req, res) ->
+    res.send('Hello<br><a href="/auth/google">Log in with Github</a>')

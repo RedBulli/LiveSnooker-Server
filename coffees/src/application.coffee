@@ -6,6 +6,7 @@ createApp = (callback) ->
   express = require 'express'
   bodyParser = require 'body-parser'
   errors = require './errors'
+  passport = require 'passport'
 
   allowCrossDomain = (request, response, next) ->
     response.header 'Access-Control-Allow-Origin', '*'
@@ -46,6 +47,8 @@ createApp = (callback) ->
   app.use allowCrossDomain
   app.use defaultHeaders
   app.use jsonParser
+  app.use passport.initialize()
+  app.use passport.session()
   require('./streaming_api')(app)
 
   require('./api') app, ->
