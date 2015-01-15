@@ -3,9 +3,12 @@
   "version": "0.0.3",
   "private": true,
   "dependencies": {
+    "backbone": "^1.1.2",
     "baconjs": "^0.7.25",
     "body-parser": "latest",
+    "connect-flash": "^0.1.1",
     "express": "latest",
+    "express-session": "^1.10.1",
     "grunt": "latest",
     "grunt-cli": "latest",
     "grunt-contrib-clean": "latest",

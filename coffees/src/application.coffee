@@ -7,6 +7,8 @@ createApp = (callback) ->
   bodyParser = require 'body-parser'
   errors = require './errors'
   passport = require 'passport'
+  session = require 'express-session'
+  flash = require('connect-flash')
 
   allowCrossDomain = (request, response, next) ->
     response.header 'Access-Control-Allow-Origin', '*'
@@ -47,8 +49,13 @@ createApp = (callback) ->
   app.use allowCrossDomain
   app.use defaultHeaders
   app.use jsonParser
+  app.use session
+    secret: process.env.SESSION_SECRET
+    resave: false
+    saveUninitialized: true
   app.use passport.initialize()
   app.use passport.session()
+  app.use flash()
   require('./streaming_api')(app)
 
   require('./api') app, ->
