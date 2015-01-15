@@ -4,9 +4,10 @@ module.exports = class FrameController
 
   connectDbClients: (callback) ->
     @redisClient = require('./../redis_client')()
-    MongoClient = require('./../mongo_client')
-    @mongoClient = new MongoClient()
-    @mongoClient.connect(callback)
+    #MongoClient = require('./../mongo_client')
+    #@mongoClient = new MongoClient()
+    #@mongoClient.connect(callback)
+    callback()
 
   publish: (dataJSON) ->
     @redisClient.publish "updates", dataJSON
@@ -15,7 +16,8 @@ module.exports = class FrameController
     @redisKeyPrefix + frameId + ":actions"
 
   storeAction: (action, callback) ->
-    @mongoClient.insert "actions", action.toObject(), callback
+    callback()
+    #@mongoClient.insert "actions", action.toObject(), callback
 
   act: (action, callback) ->
     @storeAction action, =>

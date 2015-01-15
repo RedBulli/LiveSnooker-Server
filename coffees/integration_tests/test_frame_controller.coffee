@@ -14,7 +14,7 @@ describe 'FrameController', ->
     before (done) ->
       frameController.act(createdAction, done)
     
-    it 'stores the action to mongo', (done) ->
+    xit 'stores the action to mongo', (done) ->
       frameController.mongoClient.find "actions",
         {
           frame_id: createdAction.frame.id
