@@ -2,7 +2,7 @@ User = require './../models/user'
 
 module.exports = (app) ->
   passport = require('passport')
-  GoogleStrategy = require('passport-google').Strategy
+  GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
   passport.serializeUser (user, done) ->
     done(null, user.toJSON())
@@ -11,11 +11,12 @@ module.exports = (app) ->
     done(null, User.deserialize(userJSON))
 
   passport.use(new GoogleStrategy({
-      returnURL: process.env.WEB_URL + '/auth/google/return',
-      realm: process.env.WEB_URL
+      clientID: process.env.GOOGLE_OAUTH_APP_KEY,
+      clientSecret: process.env.GOOGLE_OAUTH_APP_SECRET,
+      callbackURL: process.env.WEB_URL + "/auth/google/callback"
     },
-    (identifier, profile, done) ->
-      User.findOrCreate { openId: identifier, profile: profile }, (err, user) ->
+    (token, tokenSecret, profile, done) ->
+      User.findOrCreate { profile: profile }, (err, user) ->
        done(err, user)
   ))
 
@@ -32,13 +33,17 @@ module.exports = (app) ->
       '<br><a href="/authenticate">Try again</a>'
     )
 
-  # Use only Google auth for now
+  # Use only Google authentication for now
   app.get '/authenticate', (req, res) ->
     res.redirect('/auth/google')
 
-  app.get('/auth/google', passport.authenticate('google'))
+  app.get('/auth/google',
+    passport.authenticate('google',
+      scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
+    )
+  )
 
-  app.get('/auth/google/return', 
+  app.get('/auth/google/callback',
     passport.authenticate(
       'google', 
       { 
