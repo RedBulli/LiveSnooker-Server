@@ -11,8 +11,8 @@ module.exports = (app) ->
     done(null, User.deserialize(userJSON))
 
   passport.use(new GoogleStrategy({
-      returnURL: 'http://localhost:5000/auth/google/return',
-      realm: 'http://localhost:5000/'
+      returnURL: process.env.WEB_URL + '/auth/google/return',
+      realm: process.env.WEB_URL
     },
     (identifier, profile, done) ->
       User.findOrCreate { openId: identifier, profile: profile }, (err, user) ->
