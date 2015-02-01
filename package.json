@@ -14,12 +14,14 @@
     "grunt-contrib-clean": "latest",
     "grunt-contrib-coffee": "latest",
     "grunt-env": "^0.4.2",
+    "jsonwebtoken": "^3.2.2",
     "load-grunt-tasks": "latest",
     "mongodb": "^1.4.19",
     "mongoose": "^3.8.18",
     "passport": "^0.2.1",
     "passport-google-oauth": "^0.1.5",
     "redis": "latest",
+    "request": "^2.51.0",
     "underscore": "^1.7.0"
   },
   "devDependencies": {

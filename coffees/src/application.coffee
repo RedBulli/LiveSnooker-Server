@@ -18,7 +18,7 @@ createApp = (callback) ->
     )
     response.header(
       'Access-Control-Allow-Headers',
-      'Content-Type, Content-Length, X-Requested-With'
+      'Content-Type, Content-Length, X-Requested-With, X-AUTH-GOOGLE-ID-TOKEN'
     )
     #response.header('Access-Control-Allow-Credentials', 'true')
     if 'OPTIONS' == request.method
@@ -54,7 +54,6 @@ createApp = (callback) ->
     resave: false
     saveUninitialized: true
   app.use passport.initialize()
-  app.use passport.session()
   app.use flash()
   require('./streaming_api')(app)
 

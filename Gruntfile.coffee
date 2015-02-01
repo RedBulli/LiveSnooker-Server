@@ -55,6 +55,8 @@ module.exports = (grunt) ->
     nodemon:
       server:
         script: 'build/server.js'
+      options:
+        watch: ["build/server.js"]
 
     concurrent:
       serve: ['nodemon:server', 'watch']
