@@ -1,5 +1,8 @@
-module.exports = (app) ->
-  app.get '/framestream', (req, res) ->
+express = require('express')
+
+module.exports = ->
+  router = express.Router()
+  router.get '/framestream', (req, res) ->
     req.socket.setTimeout Infinity
 
     messageCount = 1
@@ -31,3 +34,4 @@ module.exports = (app) ->
       subscriberCount--
       subscriber.unsubscribe()
       subscriber.quit()
+  router

@@ -4,11 +4,6 @@ FrameController = rootRequire 'controllers/frame_controller'
 describe 'FrameController', ->
   frameController = new FrameController()
 
-  before (done) ->
-    frameController.connectDbClients(->
-      done()
-    )
-
   describe '#act', ->
     createdAction = fixtures.Action()
     before (done) ->

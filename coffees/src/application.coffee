@@ -9,6 +9,8 @@ createApp = (callback) ->
   passport = require 'passport'
   session = require 'express-session'
   flash = require('connect-flash')
+  async = require('async')
+  authMiddleWare = require './authentication_middleware'
 
   allowCrossDomain = (request, response, next) ->
     response.header 'Access-Control-Allow-Origin', '*'
@@ -49,14 +51,19 @@ createApp = (callback) ->
   app.use allowCrossDomain
   app.use defaultHeaders
   app.use jsonParser
-  app.use session
-    secret: process.env.SESSION_SECRET
-    resave: false
-    saveUninitialized: true
   app.use passport.initialize()
   app.use flash()
-  require('./streaming_api')(app)
+  app.use authMiddleWare.jwtAuthentication
+  app.use(require('./streaming_api')())
+  app.use(require('./api')())
+  app.use serverErrorHandling
 
-  require('./api') app, ->
-    app.use serverErrorHandling
-    callback(app)
+  initializeMongoConnection = (cb) ->
+    MongoClient = require('./mongo_client')
+    mongoClient = new MongoClient()
+    app.set('mongoClient', mongoClient)
+    mongoClient.connect(cb)
+
+  async.series([
+    initializeMongoConnection
+  ], callback(app))
