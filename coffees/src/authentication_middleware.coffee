@@ -11,10 +11,13 @@ parseGoogleToken = (token, callback) ->
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
   if token
-    parseGoogleToken token, (err, user) ->
+    parseGoogleToken token, (err, googleUser) ->
       if !err
-        request.user = user
-        next()
+        userData = {auth_id: googleUser.user_id, email: googleUser.email, vendor: 'google'}
+        request.app.get('models').User.findOrCreate userData, (err, user) ->
+          throw err if err
+          request.user = user
+          next()
       else
         response.sendStatus 401
   else

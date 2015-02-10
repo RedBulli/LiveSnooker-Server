@@ -1,12 +1,16 @@
-Backbone = require 'backbone'
+userSchema =
+  auth_id: { type: String, required: true }
+  vendor: { type: String, required: true }
+  email: { type: String, required: true }
 
-module.exports = class User extends Backbone.Model
-  @findOrCreate: (data, callback) ->
-    callback(null, new User(data))
+module.exports = (mongoose) ->
+  User = mongoose.model('User', new mongoose.Schema(userSchema))
 
-  @deserialize: (userJSON) ->
-    attributes = JSON.parse(userJSON)
-    new User(attributes)
-  
-  toJSON: ->
-    JSON.stringify(@attributes)
+  User.findOrCreate = (userData, callback) ->
+    User.findOne {auth_id: userData.auth_id, vendor: 'google'}, (err, user) ->
+      if user
+        callback(err, user)
+      else
+        User.create(userData, callback)
+
+  User

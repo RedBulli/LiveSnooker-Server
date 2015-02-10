@@ -9,7 +9,6 @@ createApp = (callback) ->
   passport = require 'passport'
   session = require 'express-session'
   flash = require('connect-flash')
-  async = require('async')
   authMiddleWare = require './authentication_middleware'
 
   allowCrossDomain = (request, response, next) ->
@@ -58,12 +57,10 @@ createApp = (callback) ->
   app.use(require('./api')())
   app.use serverErrorHandling
 
-  initializeMongoConnection = (cb) ->
-    MongoClient = require('./mongo_client')
-    mongoClient = new MongoClient()
-    app.set('mongoClient', mongoClient)
-    mongoClient.connect(cb)
+  mongoose = require('mongoose')
+  mongoose.connect(process.env.MONGOHQ_URL)
 
-  async.series([
-    initializeMongoConnection
-  ], callback(app))
+  app.set "models",
+    User: require('./models/user')(mongoose)
+
+  callback(app)
