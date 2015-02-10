@@ -27,5 +27,5 @@ module.exports = ->
       response.sendStatus 204
 
   router.get '/account', authMiddleware.requireAuth, (request, response) ->
-    response.json({ message: 'Logged in as: ' + request.user.email });
+    response.json({ user: request.user });
   router
