@@ -22,9 +22,10 @@ module.exports = ->
 
   router.post '/action', (request, response) ->
     action = actionForm.getPopulatedModel request.body
-    frameController.act action, ->
+    response.sendStatus 204
+    #frameController.act action, ->
       # TODO get errors from the callback
-      response.sendStatus 204
+      #response.sendStatus 204
 
   router.get '/account', authMiddleware.requireAuth, (request, response) ->
     response.json({ user: request.user });

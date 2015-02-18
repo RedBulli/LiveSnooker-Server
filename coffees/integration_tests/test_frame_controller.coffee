@@ -1,7 +1,7 @@
 expect = require('chai').expect
 FrameController = rootRequire 'controllers/frame_controller'
 
-describe 'FrameController', ->
+xdescribe 'FrameController', ->
   frameController = new FrameController()
 
   describe '#act', ->

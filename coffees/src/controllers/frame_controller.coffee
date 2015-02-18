@@ -1,20 +1,21 @@
-module.exports = class FrameController
-  redisChannel: "updates"
-  redisKeyPrefix: process.env.REDIS_APP_KEY + ':frames'
-  constructor: ->
-    @redisClient = require('./../redis_client')()
+express = require 'express'
+REDIS_CHANNEL = "updates"
 
-  publish: (dataJSON) ->
-    @redisClient.publish "updates", dataJSON
+publish = (request, event, json) ->
+  data =
+    event: event
+    data: json
+  request.app.get("redisClient").publish(REDIS_CHANNEL, JSON.stringify(data))
 
-  getRedisKey: (frameId) ->
-    @redisKeyPrefix + frameId + ":actions"
+newFrame = (request) ->
+  Frame = request.app.get('models').Frame
+  Frame.create (data)
 
-  storeAction: (action, callback) ->
-    callback()
-    #@mongoClient.insert "actions", action.toObject(), callback
 
-  act: (action, callback) ->
-    @storeAction action, =>
-      @publish action.toJSON()
-      callback()
+module.exports = ->
+  router = express.Router()
+
+  router.post '/frame', (request, response) ->
+    publish(request, {event: "newFrame", data: action})
+
+  router

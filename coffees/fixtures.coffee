@@ -1,8 +1,8 @@
 _ = require 'underscore'
 sequences = {}
 Action = rootRequire 'models/action'
-Player = rootRequire 'models/player'
-Frame = rootRequire 'models/frame'
+#Player = rootRequire 'models/player'
+#Frame = rootRequire 'models/frame'
 
 global.fixtures =
   sequence: (name) ->
@@ -13,13 +13,13 @@ global.fixtures =
     defaults =
       id: fixtures.sequence 'frame-id'
     data = _.extend defaults, data
-    new Frame data
+    #new Frame data
 
   Player: (data = {}) ->
     defaults =
       id: fixtures.sequence 'player-id'
     data = _.extend defaults, data
-    new Player data
+    #new Player data
 
   Action: (data = {}) ->
     defaults =

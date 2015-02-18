@@ -6,9 +6,7 @@
     "backbone": "^1.1.2",
     "baconjs": "^0.7.25",
     "body-parser": "latest",
-    "connect-flash": "^0.1.1",
     "express": "latest",
-    "express-session": "^1.10.1",
     "grunt": "latest",
     "grunt-cli": "latest",
     "grunt-contrib-clean": "latest",
@@ -17,10 +15,10 @@
     "jsonwebtoken": "^3.2.2",
     "load-grunt-tasks": "latest",
     "mongoose": "^3.8.23",
-    "passport": "^0.2.1",
-    "passport-google-oauth": "^0.1.5",
+    "pg": "^4.2.0",
     "redis": "latest",
     "request": "^2.51.0",
+    "sequelize": "^2.0.3",
     "underscore": "^1.7.0"
   },
   "devDependencies": {

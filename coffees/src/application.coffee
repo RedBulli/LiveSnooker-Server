@@ -6,9 +6,6 @@ createApp = (callback) ->
   express = require 'express'
   bodyParser = require 'body-parser'
   errors = require './errors'
-  passport = require 'passport'
-  session = require 'express-session'
-  flash = require('connect-flash')
   authMiddleWare = require './authentication_middleware'
 
   allowCrossDomain = (request, response, next) ->
@@ -50,8 +47,6 @@ createApp = (callback) ->
   app.use allowCrossDomain
   app.use defaultHeaders
   app.use jsonParser
-  app.use passport.initialize()
-  app.use flash()
   app.use authMiddleWare.jwtAuthentication
   app.use(require('./streaming_api')())
   app.use(require('./api')())
@@ -60,7 +55,10 @@ createApp = (callback) ->
   mongoose = require('mongoose')
   mongoose.connect(process.env.MONGOHQ_URL)
 
-  app.set "models",
-    User: require('./models/user')(mongoose)
+  app.set("redisClient", require('./redis_client')())
+
+  # app.set "models",
+  #   User: require('./models/user')(mongoose)
+  #   Frame: require('./models/frame')(mongoose)
 
   callback(app)

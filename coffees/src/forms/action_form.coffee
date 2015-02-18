@@ -1,8 +1,8 @@
 validators = require './validators'
 Form = require './form'
 Action = require './../models/action'
-Frame = require './../models/frame'
-Player = require './../models/player'
+#Frame = require './../models/frame'
+#Player = require './../models/player'
 
 module.exports = class ActionForm extends Form
   fields:
@@ -31,9 +31,9 @@ module.exports = class ActionForm extends Form
     validatedValues = @getValidatedValues(requestBody)
     action = new Action()
     #Frame.find(validatedValues.frame_id)
-    action.frame = new Frame({id: validatedValues.frame_id})
+    action.frame = {id: validatedValues.frame_id}
     # Player.find(validatedValues.player_id)
-    action.player = new Player({id: validatedValues.player_id})
+    action.player = {id: validatedValues.player_id}
     action.attempt = validatedValues.attempt
     action.foul = validatedValues.foul || false
     action.points = validatedValues.points
