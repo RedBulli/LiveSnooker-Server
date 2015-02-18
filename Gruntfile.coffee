@@ -66,8 +66,10 @@ module.exports = (grunt) ->
     env:
       dev:
         src: 'environments/development.env'
+        NODE_ENV: 'development'
       test:
         src: 'environments/test.env'
+        NODE_ENV: 'test'
 
   grunt.registerTask('compile', ['clean:js', 'coffee'])
   grunt.registerTask('cleanjs', ['clean:js'])

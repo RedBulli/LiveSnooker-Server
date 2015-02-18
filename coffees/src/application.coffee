@@ -7,6 +7,7 @@ createApp = (callback) ->
   bodyParser = require 'body-parser'
   errors = require './errors'
   authMiddleWare = require './authentication_middleware'
+  models = require '../../models'
 
   allowCrossDomain = (request, response, next) ->
     response.header 'Access-Control-Allow-Origin', '*'
@@ -57,8 +58,5 @@ createApp = (callback) ->
 
   app.set("redisClient", require('./redis_client')())
 
-  # app.set "models",
-  #   User: require('./models/user')(mongoose)
-  #   Frame: require('./models/frame')(mongoose)
-
-  callback(app)
+  models.sequelize.sync().then ->
+    callback(app)

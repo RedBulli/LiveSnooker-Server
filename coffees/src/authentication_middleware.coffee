@@ -1,5 +1,7 @@
 JWT = require 'jsonwebtoken'
 request = require 'request'
+models  = require '../../models'
+_ = require 'underscore'
 
 parseGoogleToken = (token, callback) ->
   request 'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=' + token, (error, response, body) ->
@@ -8,14 +10,26 @@ parseGoogleToken = (token, callback) ->
     else
       callback("ERROR!")
 
+createUserWithAuthentication = (authData, email, cb) ->
+  models.User.create(email: googleUserData.email).then (user) ->
+    auth = models.Authentication.build(authData)
+    auth.setUser(user)
+    auth.save(cb(user))
+
+getOrCreateUser = (authData, email, cb) ->
+  models.Authentication.find({ where: authData }).then (authentication) ->
+    if !authentication
+      createUserWithAuthentication(authData, googleUser.email, cb)
+    else
+      cb(authentication.getUser())
+
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
   if token
     parseGoogleToken token, (err, googleUser) ->
       if !err
-        userData = {auth_id: googleUser.user_id, email: googleUser.email, vendor: 'google'}
-        request.app.get('models').User.findOrCreate userData, (err, user) ->
-          throw err if err
+        authData = {vendorUserId: googleUser.user_id, vendor: 'google'}
+        getOrCreateUser authData, googleUser.email, (user) ->
           request.user = user
           next()
       else
