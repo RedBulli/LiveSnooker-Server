@@ -23,4 +23,5 @@ temp_src
 .dpl
 environments/development.env
 environments/test.env
+environments/production.env
 config/config.json
