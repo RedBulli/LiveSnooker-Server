@@ -1,6 +1,5 @@
 module.exports = (grunt) ->
   require('load-grunt-tasks')(grunt)
-  grunt.loadNpmTasks('grunt-env')
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
@@ -63,13 +62,17 @@ module.exports = (grunt) ->
       options:
         logConcurrentOutput: true
 
+    execute:
+      target:
+        src: ['build/server.js']
+
     env:
       dev:
         src: 'environments/development.env'
-        NODE_ENV: 'development'
       test:
         src: 'environments/test.env'
-        NODE_ENV: 'test'
+      production:
+        src: 'environments/production.env'
 
   grunt.registerTask('compile', ['clean:js', 'coffee'])
   grunt.registerTask('cleanjs', ['clean:js'])
@@ -83,7 +86,11 @@ module.exports = (grunt) ->
   grunt.registerTask 'test:integration',
     ['env:test', 'compile', 'mochaTest:integration', 'notify:integration_tests']
 
-  grunt.registerTask 'serve', ['env:dev', 'coffee', 'concurrent:serve']
+  grunt.registerTask 'serve', (target) ->
+    if target == 'production'
+      grunt.task.run(['env:production', 'coffee', 'execute'])
+    else
+      grunt.task.run(['env:dev', 'coffee', 'concurrent:serve'])
 
   # Default task(s).
   grunt.registerTask('default', ['coffee', 'test:unit', 'serve'])

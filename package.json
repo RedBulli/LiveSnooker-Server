@@ -12,6 +12,7 @@
     "grunt-contrib-clean": "latest",
     "grunt-contrib-coffee": "latest",
     "grunt-env": "^0.4.2",
+    "grunt-execute": "^0.2.2",
     "jsonwebtoken": "^3.2.2",
     "load-grunt-tasks": "latest",
     "mongoose": "^3.8.23",
