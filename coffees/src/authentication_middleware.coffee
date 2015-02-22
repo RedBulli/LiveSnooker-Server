@@ -11,17 +11,17 @@ parseGoogleToken = (token, callback) ->
       callback("ERROR!")
 
 createUserWithAuthentication = (authData, email, cb) ->
-  models.User.create(email: googleUserData.email).then (user) ->
+  models.User.create(email: email).then (user) ->
     auth = models.Authentication.build(authData)
-    auth.setUser(user)
+    auth.setUser(user, save: false)
     auth.save(cb(user))
 
 getOrCreateUser = (authData, email, cb) ->
   models.Authentication.find({ where: authData }).then (authentication) ->
     if !authentication
-      createUserWithAuthentication(authData, googleUser.email, cb)
+      createUserWithAuthentication(authData, email, cb)
     else
-      cb(authentication.getUser())
+      authentication.getUser().then(cb)
 
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
