@@ -11,9 +11,6 @@ module.exports = ->
 
   router.get '/frames', (request, response) ->
     models.Frame.all().then (frames) ->
-      for frame in frames
-        console.log frame
-         # console.log "players", players
       response.json(frames)
 
   router.post '/frames', (request, response) ->
