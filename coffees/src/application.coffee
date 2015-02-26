@@ -51,6 +51,9 @@ createApp = (callback) ->
   app.use authMiddleWare.jwtAuthentication
   app.use(require('./streaming_api')())
   app.use(require('./api')())
+  app.use(require('./controllers/frame_controller')())
+  app.use(require('./controllers/player_controller')())
+  app.use(require('./controllers/league_controller')())
   app.use serverErrorHandling
 
   mongoose = require('mongoose')

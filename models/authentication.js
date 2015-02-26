@@ -6,7 +6,7 @@ module.exports = function(Sequelize, DataTypes) {
   var Authentication = Sequelize.define("Authentication", schema, {
       classMethods: {
         associate: function(models) {
-          Authentication.belongsTo(models.User)
+          Authentication.belongsTo(models.User, { foreignKey: {allowNull: false}, onDelete: "RESTRICT" })
         }
       }
     }

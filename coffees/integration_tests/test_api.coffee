@@ -42,3 +42,10 @@ describe 'rest api', ->
         min: 0
         max: 16
         required: true
+
+  describe 'POST /player', ->
+    url = '/players'
+
+    it 'should work', (done) ->
+      response = post('/players/', {name: "Sampo"})
+      response.expect 201, done

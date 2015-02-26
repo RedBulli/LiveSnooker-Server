@@ -3,7 +3,7 @@ module.exports = function(Sequelize, DataTypes) {
     id: {
       primaryKey: true,
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      defaultValue: DataTypes.UUIDV4
     },
     email: { type: DataTypes.STRING, allowNull: false }
   };

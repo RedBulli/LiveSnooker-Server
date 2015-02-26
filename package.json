@@ -35,7 +35,7 @@
     "supertest": "latest"
   },
   "engines": {
-    "node": "0.10.33"
+    "node": "0.10.35"
   },
   "repository": {
     "type": "git",
