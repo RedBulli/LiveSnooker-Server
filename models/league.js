@@ -5,7 +5,7 @@ module.exports = function(Sequelize, DataTypes) {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4
     },
-    name: { type: DataTypes.STRING, allowNull: false, unique: true }
+    name: { type: DataTypes.STRING, allowNull: false, unique: true, validate: { len: [3,50] } }
   };
   var League = Sequelize.define("League", schema, {
       classMethods: {

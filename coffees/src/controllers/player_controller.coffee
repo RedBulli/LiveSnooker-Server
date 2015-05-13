@@ -10,7 +10,13 @@ module.exports = ->
       response.json(players)
 
   router.post '/players', (request, response) ->
-    models.Player.create(request.body).then (player) ->
+    models.Player.create(request.body).then((player) ->
       response.status(201).json(player)
+    ).catch((error) ->
+      if error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError"
+        response.status(400).json(error: error)
+      else
+        response.status(500).json(error: error)
+    )
 
   router
