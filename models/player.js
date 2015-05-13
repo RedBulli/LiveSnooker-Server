@@ -10,7 +10,8 @@ module.exports = function(Sequelize, DataTypes) {
   var Player = Sequelize.define("Player", schema, {
       classMethods: {
         associate: function(models) {
-          Player.belongsTo(models.User, { as: 'User' })
+          Player.belongsTo(models.User);
+          Player.belongsTo(models.League);
         }
       }
     }

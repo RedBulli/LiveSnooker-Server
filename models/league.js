@@ -5,12 +5,12 @@ module.exports = function(Sequelize, DataTypes) {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4
     },
-    name: { type: DataTypes.STRING, allowNull: false }
+    name: { type: DataTypes.STRING, allowNull: false, unique: true }
   };
   var League = Sequelize.define("League", schema, {
       classMethods: {
         associate: function(models) {
-          League.hasMany(models.User, { through: "Admins" });
+          League.belongsToMany(models.User, { as: 'Admins', through: "Admin" });
           League.hasMany(models.Player);
         }
       }

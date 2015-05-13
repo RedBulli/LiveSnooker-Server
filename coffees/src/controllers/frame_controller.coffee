@@ -13,6 +13,10 @@ module.exports = ->
     models.Frame.all().then (frames) ->
       response.json(frames)
 
+  router.get '/frames/:id', (request, response) ->
+    models.Frame.find({where: {id: request.params.id}}).then (frame) ->
+      response.json(frame)
+
   router.post '/frames', (request, response) ->
     models.Frame.create(request.body).then (frame) ->
       response.status(201).json(frame)

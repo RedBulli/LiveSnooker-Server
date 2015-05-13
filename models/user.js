@@ -8,9 +8,13 @@ module.exports = function(Sequelize, DataTypes) {
     email: { type: DataTypes.STRING, allowNull: false }
   };
 
-  var options = {};
-
-  var User = Sequelize.define("User", schema, options);
+  var User = Sequelize.define("User", schema, {
+    classMethods: {
+      associate: function(models) {
+        User.belongsToMany(models.League, { as: 'AdministeredLeagues', through: 'Admin' })
+      }
+    }
+  });
 
   return User;
 };
