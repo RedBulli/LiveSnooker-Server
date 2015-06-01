@@ -63,7 +63,7 @@ module.exports = (grunt) ->
         logConcurrentOutput: true
 
     execute:
-      target:
+      server:
         src: ['build/server.js']
 
     env:
@@ -88,7 +88,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'serve', (target) ->
     if target == 'production'
-      grunt.task.run(['env:production', 'coffee', 'execute'])
+      grunt.task.run(['env:production', 'coffee', 'execute:server'])
     else
       grunt.task.run(['env:dev', 'coffee', 'concurrent:serve'])
 

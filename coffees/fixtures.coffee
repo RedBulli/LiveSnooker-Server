@@ -35,8 +35,8 @@ global.fixtures =
     frameId = fixtures.sequence 'frame-id'
     playerId = fixtures.sequence 'player-id'
     defaults =
-      frame_id: frameId
-      player_id: playerId
+      FrameId: frameId
+      PlayerId: playerId
       attempt: "pot"
       result: "pot"
       points: 7

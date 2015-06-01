@@ -12,6 +12,7 @@ module.exports = function(Sequelize, DataTypes) {
         associate: function(models) {
           League.belongsToMany(models.User, { as: 'Admins', through: "Admin" });
           League.hasMany(models.Player);
+          League.hasMany(models.Frame);
         }
       }
     }

@@ -6,11 +6,11 @@ Action = require './../models/action'
 
 module.exports = class ActionForm extends Form
   fields:
-    frame_id: [
+    FrameId: [
       new validators.RequiredValidator,
       new validators.IntegerValidator
     ]
-    player_id: [
+    PlayerId: [
       new validators.RequiredValidator,
       new validators.IntegerValidator
     ]
@@ -31,9 +31,9 @@ module.exports = class ActionForm extends Form
     validatedValues = @getValidatedValues(requestBody)
     action = new Action()
     #Frame.find(validatedValues.frame_id)
-    action.frame = {id: validatedValues.frame_id}
+    action.frame = {id: validatedValues.FrameId}
     # Player.find(validatedValues.player_id)
-    action.player = {id: validatedValues.player_id}
+    action.player = {id: validatedValues.PlayerId}
     action.attempt = validatedValues.attempt
     action.foul = validatedValues.foul || false
     action.points = validatedValues.points

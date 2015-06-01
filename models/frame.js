@@ -4,6 +4,15 @@ module.exports = function(Sequelize, DataTypes) {
       primaryKey: true,
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4
+    },
+    liveSessionId: {
+      type: DataTypes.UUID
+    },
+    winner: {
+      type: DataTypes.UUID
+    },
+    endedAt: {
+      type: DataTypes.DATE
     }
   };
   var Frame = Sequelize.define("Frame", schema, {
@@ -15,7 +24,7 @@ module.exports = function(Sequelize, DataTypes) {
         }
       }
     }
-  )
+  );
 
   return Frame;
 };

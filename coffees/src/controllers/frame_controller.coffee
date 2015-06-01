@@ -14,7 +14,14 @@ module.exports = ->
       response.json(frames)
 
   router.get '/frames/:id', (request, response) ->
-    models.Frame.find({where: {id: request.params.id}}).then (frame) ->
+    models.Frame.find({
+      where: {id: request.params.id},
+      include: [
+        { model: models.Player, as: 'Player1'},
+        { model: models.Player, as: 'Player2'},
+        { model: models.League }
+      ]
+    }).then (frame) ->
       response.json(frame)
 
   router.post '/frames', (request, response) ->

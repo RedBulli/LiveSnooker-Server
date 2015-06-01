@@ -1,5 +1,6 @@
 request = require 'supertest'
 apiTesthelpers = require './api_test_helpers'
+models  = require '../../models'
 
 applyTestHelpers = (response) ->
   response.expectBadRequest = (message, done) ->
@@ -45,7 +46,19 @@ describe 'rest api', ->
 
   describe 'POST /player', ->
     url = '/players'
+    league = null
+
+    before (done) ->
+      models.League.findOne({}).then (foundLeague) ->
+        if foundLeague
+          league = foundLeague
+          done()
+        else
+          models.League.create({name: "Test"}).then (newLeague) ->
+            league = newLeague
+            done()
 
     it 'should work', (done) ->
-      response = post('/players/', {name: "Sampo"})
-      response.expect 201, done
+      response = post('/players/', {name: "Sampo", LeagueId: league.id})
+      response.expect 201
+      models.Player.destroy({truncate: true, cascade: true}).then(-> done())

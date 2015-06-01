@@ -19,7 +19,12 @@ module.exports = ->
       where: {id: request.params.id},
       include: [
         { model: models.Player },
-        { model: models.User, as: 'Admins' }
+        { model: models.User, as: 'Admins' },
+        { model: models.Frame, include: [
+          { model: models.Player, as: 'Player1'},
+          { model: models.Player, as: 'Player2'},
+          { model: models.League }
+        ]}
       ]
     }).then((league) ->
       response.json(league)
