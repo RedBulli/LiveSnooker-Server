@@ -25,6 +25,10 @@ module.exports = ->
 
   router.post '/shots', (request, response) ->
     models.Shot.create(request.body).then (shot) ->
+      data =
+        event: "newShot"
+        shot: shot.toJSON()
+      request.app.get('redisClient').publish("updates", JSON.stringify(data));
       response.status(201).json(shot)
     .catch((error) ->
       if error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError"
