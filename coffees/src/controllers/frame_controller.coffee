@@ -19,7 +19,8 @@ module.exports = ->
       include: [
         { model: models.Player, as: 'Player1'},
         { model: models.Player, as: 'Player2'},
-        { model: models.League }
+        { model: models.League },
+        { model: models.Shot }
       ]
     }).then (frame) ->
       response.json(frame)

@@ -54,6 +54,7 @@ createApp = (callback) ->
   app.use(require('./controllers/frame_controller')())
   app.use(require('./controllers/player_controller')())
   app.use(require('./controllers/league_controller')())
+  app.use(require('./controllers/shot_controller')())
   app.use serverErrorHandling
 
   mongoose = require('mongoose')

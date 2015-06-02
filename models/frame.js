@@ -21,6 +21,7 @@ module.exports = function(Sequelize, DataTypes) {
           Frame.belongsTo(models.League, { foreignKey: {allowNull: false}, onDelete: "RESTRICT" });
           Frame.belongsTo(models.Player, { as: 'Player1', foreignKey: {allowNull: false}, onDelete: "RESTRICT" });
           Frame.belongsTo(models.Player, { as: 'Player2', foreignKey: {allowNull: false}, onDelete: "RESTRICT" });
+          Frame.hasMany(models.Shot);
         }
       }
     }

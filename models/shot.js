@@ -2,7 +2,8 @@ module.exports = function(Sequelize, DataTypes) {
   var schema = {
     shotNumber: {
       type: DataTypes.INTEGER,
-      unique: 'shotNumberFrame'
+      unique: 'shotNumberFrame',
+      allowNull: false
     },
     attempt: {
       type: DataTypes.ENUM("pot", "shotToNothing", "safety")
