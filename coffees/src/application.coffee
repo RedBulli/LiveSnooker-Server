@@ -1,6 +1,11 @@
 module.exports.listen = (port, callback) ->
   createApp (app) ->
-    callback(app.listen port)
+    server = app.listen port
+    app.io = require('socket.io')(server)
+    app.io.sockets.on 'connection', (socket) ->
+      socket.on 'message', (data) ->
+        socket.broadcast.emit('message', data)
+    callback(server)
 
 createApp = (callback) ->
   express = require 'express'
@@ -19,7 +24,6 @@ createApp = (callback) ->
       'Access-Control-Allow-Headers',
       'Content-Type, Content-Length, X-Requested-With, X-AUTH-GOOGLE-ID-TOKEN'
     )
-    #response.header('Access-Control-Allow-Credentials', 'true')
     if 'OPTIONS' == request.method
       response.sendStatus 200
     else
