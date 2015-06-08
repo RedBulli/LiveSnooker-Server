@@ -18,7 +18,7 @@ createApp = (callback) ->
     response.header 'Access-Control-Allow-Origin', '*'
     response.header(
       'Access-Control-Allow-Methods',
-      'GET,PUT,POST,DELETE,OPTIONS'
+      'GET,PUT,POST,DELETE,OPTIONS,PATCH'
     )
     response.header(
       'Access-Control-Allow-Headers',

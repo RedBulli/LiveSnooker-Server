@@ -23,6 +23,7 @@ module.exports = ->
         { model: models.Frame, include: [
           { model: models.Player, as: 'Player1'},
           { model: models.Player, as: 'Player2'},
+          { model: models.Player, as: 'Winner'},
           { model: models.League }
         ]}
       ]

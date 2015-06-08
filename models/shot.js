@@ -1,5 +1,10 @@
 module.exports = function(Sequelize, DataTypes) {
   var schema = {
+    FrameId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: 'shotNumberFrame'
+    },
     shotNumber: {
       type: DataTypes.INTEGER,
       unique: 'shotNumberFrame',
@@ -34,7 +39,7 @@ module.exports = function(Sequelize, DataTypes) {
   var Shot = Sequelize.define("Shot", schema, {
       classMethods: {
         associate: function(models) {
-          Shot.belongsTo(models.Frame, { foreignKey: {allowNull: false, unique: 'shotNumberFrame' }, onDelete: "RESTRICT" });
+          Shot.belongsTo(models.Frame, { foreignKey: 'FrameId', onDelete: "CASCADE" });
           Shot.belongsTo(models.Player, { as: 'Player', foreignKey: {allowNull: false}, onDelete: "RESTRICT" });
         }
       }
