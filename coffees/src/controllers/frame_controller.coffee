@@ -26,12 +26,30 @@ module.exports = ->
     }).then (frame) ->
       response.json(frame)
 
+  router.get '/leagues/:id/frames', (request, response) ->
+    models.Frame.findAll({
+      where: {LeagueId: request.params.id},
+      include: [
+        { model: models.Player, as: 'Player1' },
+        { model: models.Player, as: 'Player2' },
+        { model: models.League },
+        { model: models.Player, as: 'Winner' },
+        { model: models.Shot }
+      ]
+    }).then (frames) ->
+      response.json(frames)
+
   checkAuthorizationToModifyFrame = (user, frame) ->
     true # TODO implement this
 
   router.post '/frames', (request, response) ->
     models.Frame.create(request.body).then (frame) ->
+      # Validate that players belong to Leagues and are different
       response.status(201).json(frame)
+      data =
+        event: "frameStart"
+        frame: frame.toJSON()
+      request.app.get('redisClient').publish("updates", JSON.stringify(data))
 
   router.delete '/frames/:id', (request, response) ->
     models.Frame.findOne({where: {id: request.params.id}}).then (frame) ->
@@ -39,6 +57,10 @@ module.exports = ->
         response.status(400).json(error: "Deleting completed frames is not allowed.")
       else
         frame.destroy()
+        data =
+          event: "frameDelete"
+          frame: frame.toJSON()
+        request.app.get('redisClient').publish("updates", JSON.stringify(data))
         response.status(204)
 
   router.patch '/frames/:id', (request, response) ->
@@ -54,7 +76,7 @@ module.exports = ->
           data =
             event: "frameEnd"
             frame: frame.toJSON()
-          request.app.get('redisClient').publish("updates", JSON.stringify(data));
+          request.app.get('redisClient').publish("updates", JSON.stringify(data))
           response.status(200).json(frame)
         else
           response.status(400).json(error: "WinnerId is not a player in this frame")
