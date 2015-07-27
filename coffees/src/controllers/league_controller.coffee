@@ -33,6 +33,19 @@ module.exports = ->
       response.status(500).json(error: error)
     )
 
+  router.get '/leagues/:id/frames', (request, response) ->
+    models.Frame.findAll({
+      where: {LeagueId: request.params.id},
+      include: [
+        { model: models.Player, as: 'Player1' },
+        { model: models.Player, as: 'Player2' },
+        { model: models.League },
+        { model: models.Player, as: 'Winner' },
+        { model: models.Shot }
+      ]
+    }).then (frames) ->
+      response.json(frames)
+
   router.post '/leagues', (request, response) ->
     models.League.create(request.body).then((league) ->
       response.status(201).json(league)
