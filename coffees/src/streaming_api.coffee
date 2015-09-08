@@ -3,7 +3,7 @@ express = require('express')
 module.exports = ->
   router = express.Router()
   router.get '/framestream', (req, res) ->
-    req.socket.setTimeout Infinity
+    req.socket.setTimeout 1000*1000
 
     messageCount = 1
     subscriberCount = 0
