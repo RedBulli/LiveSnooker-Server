@@ -6,6 +6,15 @@ newShot = (request) ->
   Shot = request.app.get('models').Shot
   Shot.create (data)
 
+validateShotNumber = (request, response, next) ->
+  models.Shot.max('shotNumber', { where: {FrameId: request.body['FrameId']} }).then (max) ->
+    nextShotNumber = parseInt(max) + 1
+    if parseInt(request.body['shotNumber']) != nextShotNumber
+      response.status(400).json(error: 'next shotNumber should be ' + nextShotNumber)
+      response.end()
+    else
+      next()
+
 module.exports = ->
   router = express.Router()
 
@@ -23,7 +32,7 @@ module.exports = ->
     }).then (shot) ->
       response.json(shot)
 
-  router.post '/shots', (request, response) ->
+  router.post '/shots', validateShotNumber, (request, response) ->
     models.Shot.create(request.body).then (shot) ->
       data =
         event: "newShot"
