@@ -46,4 +46,10 @@ module.exports = ->
         response.status(500).json(error: error)
     )
 
+  router.delete '/shots/:id', (request, response) ->
+    models.Shot.destroy({
+      where: {id: request.params.id},
+    }).then (shot) ->
+      response.status(204).json("")
+
   router
