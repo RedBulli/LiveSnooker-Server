@@ -47,9 +47,14 @@ module.exports = ->
     )
 
   router.delete '/shots/:id', (request, response) ->
-    models.Shot.destroy({
+    models.Shot.findOne({
       where: {id: request.params.id},
     }).then (shot) ->
-      response.status(204).json("")
+      models.Shot.max('shotNumber', { where: {FrameId: shot.FrameId} }).then (max) ->
+        if shot.shotNumber == max
+          models.Shot.destroy({where: {id: shot.id}})
+          response.status(204).json("")
+        else
+          response.status(400).json(error: "you can only delete the last shot in the frame")
 
   router
