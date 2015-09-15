@@ -8,12 +8,15 @@ newShot = (request) ->
 
 validateShotNumber = (request, response, next) ->
   models.Shot.max('shotNumber', { where: {FrameId: request.body['FrameId']} }).then (max) ->
-    nextShotNumber = parseInt(max) + 1
-    if parseInt(request.body['shotNumber']) != nextShotNumber
-      response.status(400).json(error: 'next shotNumber should be ' + nextShotNumber)
-      response.end()
-    else
+    if isNaN(max) && parseInt(request.body['shotNumber']) == 1
       next()
+    else
+      nextShotNumber = parseInt(max) + 1
+      if parseInt(request.body['shotNumber']) != nextShotNumber
+        response.status(400).json(error: 'next shotNumber should be ' + nextShotNumber)
+        response.end()
+      else
+        next()
 
 module.exports = ->
   router = express.Router()
@@ -37,7 +40,7 @@ module.exports = ->
       data =
         event: "newShot"
         shot: shot.toJSON()
-      request.app.get('redisClient').publish("updates", JSON.stringify(data));
+      request.app.get('redisClient').publish(shot.FrameId, JSON.stringify(data));
       response.status(201).json(shot)
     .catch((error) ->
       if error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError"
@@ -56,7 +59,7 @@ module.exports = ->
             data =
               event: "deleteShot"
               shot: shot.toJSON()
-            request.app.get('redisClient').publish("updates", JSON.stringify(data))
+            request.app.get('redisClient').publish(shot.FrameId, JSON.stringify(data))
             response.status(204).json("")
         else
           response.status(400).json(error: "you can only delete the last shot in the frame")

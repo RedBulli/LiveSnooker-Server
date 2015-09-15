@@ -2,15 +2,15 @@ express = require('express')
 
 module.exports = ->
   router = express.Router()
-  router.get '/framestream', (req, res) ->
-    req.socket.setTimeout 1000*1000
+  router.get '/framestream/:id', (request, response) ->
+    request.socket.setTimeout 1000*1000
 
     messageCount = 1
     subscriberCount = 0
 
     subscriber = require('./redis_client')()
 
-    subscriber.subscribe 'updates'
+    subscriber.subscribe request.params.id
 
     subscriber.on 'error', (err) ->
       console.error('Redis Error: ' + err)
@@ -20,17 +20,17 @@ module.exports = ->
 
     subscriber.on "message", (channel, message) ->
       messageCount++
-      res.write 'id: ' + messageCount + '\n'
-      res.write 'data: ' + message + '\n\n'
+      response.write 'id: ' + messageCount + '\n'
+      response.write 'data: ' + message + '\n\n'
 
-    res.writeHead 200,
+    response.writeHead 200,
       'Content-Type': 'text/event-stream'
       'Cache-Control': 'no-cache'
       'Connection': 'keep-alive'
 
-    res.write '\n'
+    response.write '\n'
 
-    req.on 'close', ->
+    request.on 'close', ->
       subscriberCount--
       subscriber.unsubscribe()
       subscriber.quit()

@@ -40,7 +40,7 @@ module.exports = ->
       data =
         event: "frameStart"
         frame: frame.toJSON()
-      request.app.get('redisClient').publish("updates", JSON.stringify(data))
+      request.app.get('redisClient').publish(frame.LeagueId, JSON.stringify(data))
       response.status(201).json(frame)
 
   router.all '/frames/:id/:op?', validateLeaguePrivileges
@@ -73,7 +73,7 @@ module.exports = ->
       data =
         event: "frameDelete"
         frame: request.frame.toJSON()
-      request.app.get('redisClient').publish("updates", JSON.stringify(data))
+      request.app.get('redisClient').publish(request.frame.LeagueId, JSON.stringify(data))
       response.status(204)
 
   router.patch '/frames/:id', (request, response) ->
@@ -88,7 +88,7 @@ module.exports = ->
         data =
           event: "frameEnd"
           frame: request.frame.toJSON()
-        request.app.get('redisClient').publish("updates", JSON.stringify(data))
+        request.app.get('redisClient').publish(request.frame.LeagueId, JSON.stringify(data))
         response.status(200).json(request.frame)
       else
         response.status(400).json(error: "WinnerId is not a player in this frame")
