@@ -52,8 +52,12 @@ module.exports = ->
     }).then (shot) ->
       models.Shot.max('shotNumber', { where: {FrameId: shot.FrameId} }).then (max) ->
         if shot.shotNumber == max
-          models.Shot.destroy({where: {id: shot.id}})
-          response.status(204).json("")
+          shot.destroy().then ->
+            data =
+              event: "deleteShot"
+              shot: shot.toJSON()
+            request.app.get('redisClient').publish("updates", JSON.stringify(data))
+            response.status(204).json("")
         else
           response.status(400).json(error: "you can only delete the last shot in the frame")
 
