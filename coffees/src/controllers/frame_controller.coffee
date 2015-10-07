@@ -94,7 +94,7 @@ module.exports = ->
         event: "frameDelete"
         frame: request.frame.toJSON()
       request.app.get('redisClient').publish(request.frame.LeagueId, JSON.stringify(data))
-      response.status(204)
+      response.status(204).json("")
 
   router.patch '/frames/:id', (request, response) ->
     if request.frame.WinnerId
