@@ -14,7 +14,27 @@ validateNewFrame = (request, response, next) ->
     response.status(400).json(error: "Cannot set winner before shots have been played")
     response.end()
   else
-    models.Player.count(
+    validatePlayersBelongToLeague request, response, () ->
+      validatePlayersDontHaveUnfinishedFrames request, response, next
+
+validatePlayersDontHaveUnfinishedFrames = (request, response, next) ->
+  playersIds = [request.body["Player1Id"], request.body["Player2Id"]]
+  models.Frame.count(
+    where:
+      WinnerId: null
+      $or: [
+        { Player1Id: { $in: playersIds } },
+        { Player2Id: { $in: playersIds } }
+      ]
+  ).then (count) ->
+    if count != 0
+      response.status(400).json(error: "Players cannot have incomplete frames when creating a new frame")
+      response.end()
+    else
+      next()
+
+validatePlayersBelongToLeague = (request, response, next) ->
+  models.Player.count(
       where:
         id: {$in: [request.body["Player1Id"], request.body["Player2Id"]]}
         LeagueId: request.body["LeagueId"]
