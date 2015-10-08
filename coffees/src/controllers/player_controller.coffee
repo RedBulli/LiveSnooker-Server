@@ -23,4 +23,24 @@ module.exports = ->
         response.status(500).json(error: error)
     )
 
+  router.all '/players/:id/:op?', (request, response, next) ->
+    models.Player.findOne(
+      where: {id: request.params.id}
+    ).then((player) ->
+      request.player = player
+      next()
+    ).catch( ->
+      response.status(400).json(error: 'cannot find player ' + request.params.id)
+      response.end()
+    )
+
+  router.delete '/players/:id', (request, response) ->
+    request.player.set("deleted", true)
+    request.player.save()
+    data =
+      event: "playerDelete"
+      player: request.player.toJSON()
+    request.app.get('redisClient').publish(request.player.LeagueId, JSON.stringify(data))
+    response.status(204).json("")
+
   router

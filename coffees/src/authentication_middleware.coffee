@@ -4,13 +4,11 @@ models  = require '../../models'
 _ = require 'underscore'
 
 parseGoogleToken = (token, callback) ->
-  callback(null, {email: "sampo.verkasalo+dev@gmail.com", user_id: "123456"})
-
-  # request 'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=' + token, (error, response, body) ->
-  #   if (!error && response.statusCode == 200)
-  #     callback(null, JSON.parse(body))
-  #   else
-  #     callback("ERROR!")
+  request 'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=' + token, (error, response, body) ->
+    if (!error && response.statusCode == 200)
+      callback(null, JSON.parse(body))
+    else
+      callback("ERROR!")
 
 createUserWithAuthentication = (authData, email, cb) ->
   models.User.create(email: email).then (user) ->
@@ -27,7 +25,7 @@ getOrCreateUser = (authData, email, cb) ->
 
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
-  if true
+  if token
     parseGoogleToken token, (err, googleUser) ->
       if !err
         authData = {vendorUserId: googleUser.user_id, vendor: 'google'}
