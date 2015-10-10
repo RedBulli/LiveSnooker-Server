@@ -53,6 +53,12 @@ createApp = (callback) ->
   app.use defaultHeaders
   app.use jsonParser
   app.use authMiddleWare.jwtAuthentication
+  router = express.Router()
+  router.post '*', authMiddleWare.requireAuth
+  router.put '*', authMiddleWare.requireAuth
+  router.patch '*', authMiddleWare.requireAuth
+  router.delete '*', authMiddleWare.requireAuth
+  app.use(router)
   app.use(require('./streaming_api')())
   app.use(require('./api')())
   app.use(require('./controllers/frame_controller')())
