@@ -43,4 +43,13 @@ module.exports = ->
     request.app.get('redisClient').publish(request.player.LeagueId, JSON.stringify(data))
     response.status(204).json("")
 
+  router.put '/players/:id', (request, response) ->
+    request.player.set("name", request.body["name"]);
+    request.player.save()
+    data =
+      event: "playerUpdate"
+      player: request.player.toJSON()
+    request.app.get('redisClient').publish(request.player.LeagueId, JSON.stringify(data))
+    response.status(200).json("")
+
   router
