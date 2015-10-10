@@ -1,18 +1,29 @@
 express = require 'express'
 models  = require '../../../models'
 authMiddleware = require '../authentication_middleware'
+Sequelize = require 'sequelize'
 
 module.exports = ->
   router = express.Router()
 
   router.get '/leagues', (request, response) ->
-    models.League.all({
-      include: [
-        { model: models.Player },
-        { model: models.User, as: 'Admins' }
-      ]
-    }).then (leagues) ->
-      response.json(leagues)
+    models.Admin.all({
+      where: { UserId: request.user.id }
+    }).then (admins) ->
+      leagueIds = Sequelize.Utils._.map admins, (admin) ->
+        admin.LeagueId
+      models.League.all({
+        include: [
+          { model: models.Player },
+          { model: models.User, as: 'Admins' }
+        ],
+        where:
+          $or: [
+            { public: true },
+            { id: { $in: leagueIds } }
+          ]
+      }).then (leagues) ->
+        response.json(leagues)
 
   router.get '/leagues/:id', (request, response) ->
     models.League.find({
