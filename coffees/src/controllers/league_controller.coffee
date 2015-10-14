@@ -25,6 +25,8 @@ module.exports = ->
       }).then (leagues) ->
         response.json(leagues)
 
+  router.all '/leagues/:id/:op?', (req, resp, next) -> authMiddleware.validateLeagueAuth(req.params.id, req, resp, next)
+
   router.get '/leagues/:id', (request, response) ->
     models.League.find({
       where: {id: request.params.id},
