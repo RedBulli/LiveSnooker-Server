@@ -21,8 +21,8 @@ module.exports = function(Sequelize, DataTypes) {
   var Break = Sequelize.define("Break", schema, {
       classMethods: {
         associate: function(models) {
-          Break.belongsTo(models.Frame, { foreignKey: {allowNull: false, unique: 'breakStartShotNumberFrame' }, onDelete: "RESTRICT" });
-          Break.belongsTo(models.Player, { as: 'Player', foreignKey: {allowNull: false}, onDelete: "RESTRICT" });
+          Break.belongsTo(models.Frame, { foreignKey: {allowNull: false, unique: 'breakStartShotNumberFrame' }, onDelete: "CASCADE" });
+          Break.belongsTo(models.Player, { as: 'Player', foreignKey: {allowNull: false}, onDelete: "CASCADE" });
         }
       }
     }

@@ -14,8 +14,8 @@ module.exports = ->
         admin.LeagueId
       models.League.all({
         include: [
-          { model: models.Player },
-          { model: models.User, as: 'Admins' }
+          { model: models.Player, required: false },
+          { model: models.User, as: 'Admins', required: false }
         ],
         where:
           $or: [
@@ -25,18 +25,33 @@ module.exports = ->
       }).then (leagues) ->
         response.json(leagues)
 
+  router.post '/leagues', (request, response) ->
+    models.League.create(request.body).then((league) ->
+      models.Admin.create({
+        UserId: request.user.id
+        LeagueId: league.id
+      }).then ->
+        league.reload().then (league) ->
+          response.status(201).json(league)
+    ).catch((error) ->
+      if error.name == "SequelizeValidationError"
+        response.status(400).json(error: error)
+      else
+        response.status(500).json(error: error)
+    )
+
   router.all '/leagues/:id/:op?', (req, resp, next) -> authMiddleware.validateLeagueAuth(req.params.id, req, resp, next)
 
   router.get '/leagues/:id', (request, response) ->
     models.League.find({
       where: {id: request.params.id},
       include: [
-        { model: models.Player },
-        { model: models.User, as: 'Admins' },
-        { model: models.Frame, include: [
-          { model: models.Player, as: 'Player1'},
-          { model: models.Player, as: 'Player2'},
-          { model: models.Player, as: 'Winner'},
+        { model: models.Player, required: false },
+        { model: models.User, as: 'Admins', required: false },
+        { model: models.Frame, required: false, include: [
+          { model: models.Player, as: 'Player1' },
+          { model: models.Player, as: 'Player2' },
+          { model: models.Player, as: 'Winner', required: false },
           { model: models.League }
         ]}
       ]
@@ -53,20 +68,10 @@ module.exports = ->
         { model: models.Player, as: 'Player1' },
         { model: models.Player, as: 'Player2' },
         { model: models.League },
-        { model: models.Player, as: 'Winner' },
-        { model: models.Shot }
+        { model: models.Player, as: 'Winner', required: false },
+        { model: models.Shot, required: false }
       ]
     }).then (frames) ->
       response.json(frames)
-
-  router.post '/leagues', (request, response) ->
-    models.League.create(request.body).then((league) ->
-      response.status(201).json(league)
-    ).catch((error) ->
-      if error.name == "SequelizeValidationError"
-        response.status(400).json(error: error)
-      else
-        response.status(500).json(error: error)
-    )
 
   router

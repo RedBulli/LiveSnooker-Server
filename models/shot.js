@@ -40,7 +40,7 @@ module.exports = function(Sequelize, DataTypes) {
       classMethods: {
         associate: function(models) {
           Shot.belongsTo(models.Frame, { foreignKey: 'FrameId', onDelete: "CASCADE" });
-          Shot.belongsTo(models.Player, { as: 'Player', foreignKey: {allowNull: false}, onDelete: "RESTRICT" });
+          Shot.belongsTo(models.Player, { as: 'Player', foreignKey: {allowNull: false}, onDelete: "CASCADE" });
         }
       }
     }

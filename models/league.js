@@ -6,7 +6,8 @@ module.exports = function(Sequelize, DataTypes) {
       defaultValue: DataTypes.UUIDV4
     },
     name: { type: DataTypes.STRING, allowNull: false, unique: true, validate: { len: [3,50] } },
-    public: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
+    public: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    deleted: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
   };
   var League = Sequelize.define("League", schema, {
       classMethods: {
@@ -14,6 +15,11 @@ module.exports = function(Sequelize, DataTypes) {
           League.belongsToMany(models.User, { as: 'Admins', through: "Admins" });
           League.hasMany(models.Player);
           League.hasMany(models.Frame);
+        }
+      },
+      defaultScope: {
+        where: {
+          deleted: false
         }
       }
     }

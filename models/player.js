@@ -16,8 +16,7 @@ module.exports = function(Sequelize, DataTypes) {
   var Player = Sequelize.define("Player", schema, {
       classMethods: {
         associate: function(models) {
-          Player.belongsTo(models.User);
-          Player.belongsTo(models.League, {foreignKey: 'LeagueId'});
+          Player.belongsTo(models.League, {foreignKey: 'LeagueId', onDelete: "CASCADE" });
         }
       },
       defaultScope: {

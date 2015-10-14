@@ -67,9 +67,6 @@ createApp = (callback) ->
   app.use(require('./controllers/shot_controller')())
   app.use serverErrorHandling
 
-  mongoose = require('mongoose')
-  mongoose.connect(process.env.MONGOHQ_URL)
-
   app.set("redisClient", require('./redis_client')())
 
   models.sequelize.sync().then ->

@@ -68,11 +68,11 @@ module.exports = ->
     models.Frame.findOne(
       where: {id: request.params.id},
       include: [
+        { model: models.Player, as: 'Winner', required: false },
         { model: models.Player, as: 'Player1' },
         { model: models.Player, as: 'Player2' },
         { model: models.League },
-        { model: models.Player, as: 'Winner' },
-        { model: models.Shot }
+        { model: models.Shot, required: false }
       ]
     ).then((frame) ->
       request.frame = frame
