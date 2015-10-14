@@ -69,9 +69,9 @@ module.exports = ->
       where: {id: request.params.id},
       include: [
         { model: models.Player, as: 'Winner', required: false },
-        { model: models.Player, as: 'Player1' },
-        { model: models.Player, as: 'Player2' },
-        { model: models.League },
+        { model: models.Player, as: 'Player1', required: false },
+        { model: models.Player, as: 'Player2', required: false },
+        { model: models.League, required: false },
         { model: models.Shot, required: false }
       ]
     ).then((frame) ->
