@@ -5,8 +5,10 @@ authMiddleware = require '../authentication_middleware'
 module.exports = ->
   router = express.Router()
 
+  playerIncludes = [{ model: models.League }]
+
   router.get '/players', (request, response) ->
-    models.Player.all().then (players) ->
+    models.Player.all(include: playerIncludes).then (players) ->
       response.json(players)
 
   router.post '/players', (request, response) ->
@@ -15,7 +17,7 @@ module.exports = ->
         event: "newPlayer"
         player: player.toJSON()
       request.app.get('redisClient').publish(player.LeagueId, JSON.stringify(data))
-      player.reload(include: [{ model: models.League }]).then (pl) ->
+      player.reload(include: playerIncludes).then (pl) ->
         response.status(201).json(pl)
     ).catch((error) ->
       if error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError"
