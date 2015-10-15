@@ -32,6 +32,7 @@ module.exports = ->
       createAdminQuery = models.Admin.create
         UserId: request.user.id
         LeagueId: league.id
+        write: true
       createAdminQuery.then ->
         findLeague(league.id).then (league) -> response.status(201).json(league)
       createAdminQuery.catch (error) ->
