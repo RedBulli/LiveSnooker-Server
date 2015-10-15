@@ -28,25 +28,24 @@ validateLeagueAuth = (leagueId, request, response, next) ->
     response.status(404).json(error: 'not found')
     response.end()
 
-  requireAuth request, response, ->
-    models.League.findOne(
-        where: {id: leagueId}
-      ).then((league) ->
-        request.league = league
-        if league.public
-          next()
-        else
-          unless request.user
+  models.League.findOne(
+    where: {id: leagueId}
+  ).then((league) ->
+    request.league = league
+    if league.public
+      next()
+    else
+      unless request.user
+        responseNotFound()
+      else
+        models.Admin.count(
+          where: {UserId: request.user.id, LeagueId: request.params.id}
+        ).then (count) ->
+          if count == 0
             responseNotFound()
           else
-            models.Admin.count(
-              where: {UserId: request.user.id, LeagueId: request.params.id}
-            ).then (count) ->
-              if count == 0
-                responseNotFound()
-              else
-                next()
-      ).catch responseNotFound
+            next()
+  ).catch responseNotFound
 
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
