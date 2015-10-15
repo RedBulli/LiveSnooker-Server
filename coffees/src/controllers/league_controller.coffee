@@ -17,29 +17,30 @@ module.exports = ->
     ]}
   ]
 
-  findLeague = (leagueId) -> new Promise (resolve, reject) ->
-    models.League.find({
-      where: {id: leagueId},
+  findLeague = (leagueId) ->
+    models.League.find
+      where: { id: leagueId }
       include: leagueIncludes
-    }).then(resolve).catch(reject)
 
   router.get '/leagues', (request, response) ->
     request.user.getLeagues().then (leagues) ->
       response.json(leagues)
 
   router.post '/leagues', (request, response) ->
-    models.League.create(request.body).then((league) ->
-      models.Admin.create({
+    createLeagueQuery = models.League.create(request.body)
+    createLeagueQuery.then (league) ->
+      createAdminQuery = models.Admin.create
         UserId: request.user.id
         LeagueId: league.id
-      }).then ->
+      createAdminQuery.then ->
         findLeague(league.id).then (league) -> response.status(201).json(league)
-    ).catch((error) ->
+      createAdminQuery.catch (error) ->
+        response.status(500).json(error: error)
+    createLeagueQuery.catch (error) ->
       if error.name == "SequelizeValidationError"
         response.status(400).json(error: error)
       else
         response.status(500).json(error: error)
-    )
 
   router.all '/leagues/:id/:op?', (req, resp, next) -> authMiddleware.validateLeagueAuth(req.params.id, req, resp, next)
 
