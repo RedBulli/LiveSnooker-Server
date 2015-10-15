@@ -14,8 +14,9 @@ module.exports = ->
       data =
         event: "newPlayer"
         player: player.toJSON()
-      request.app.get('redisClient').publish(player.LeagueId, JSON.stringify(data));
-      response.status(201).json(player)
+      request.app.get('redisClient').publish(player.LeagueId, JSON.stringify(data))
+      player.reload(include: [{ model: models.League }]).then (pl) ->
+        response.status(201).json(pl)
     ).catch((error) ->
       if error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError"
         response.status(400).json(error: error)
