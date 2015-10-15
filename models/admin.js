@@ -1,4 +1,14 @@
 module.exports = function(Sequelize, DataTypes) {
-  var Admin = Sequelize.define("Admin", {}, {});
+  var schema = {
+    write: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true }
+  };
+  var Admin = Sequelize.define("Admin", schema, {
+    classMethods: {
+      associate: function(models) {
+        Admin.belongsTo(models.League, { foreignKey: {allowNull: false}, onDelete: "CASCADE" });
+        Admin.belongsTo(models.User, { foreignKey: {allowNull: false}, onDelete: "CASCADE" });
+      }
+    }
+  });
   return Admin;
 };

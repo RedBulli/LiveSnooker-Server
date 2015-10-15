@@ -12,9 +12,9 @@ module.exports = function(Sequelize, DataTypes) {
   var League = Sequelize.define("League", schema, {
       classMethods: {
         associate: function(models) {
-          League.belongsToMany(models.User, { as: 'Admins', through: "Admins" });
           League.hasMany(models.Player);
           League.hasMany(models.Frame);
+          League.hasMany(models.Admin);
         }
       },
       defaultScope: {

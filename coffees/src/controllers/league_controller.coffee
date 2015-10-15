@@ -6,39 +6,26 @@ Sequelize = require 'sequelize'
 module.exports = ->
   router = express.Router()
 
+  leagueIncludes = [
+    { model: models.Player, required: false },
+    { model: models.Admin, required: false },
+    { model: models.Frame, required: false, include: [
+      { model: models.Player, as: 'Player1', required: false },
+      { model: models.Player, as: 'Player2', required: false },
+      { model: models.Player, as: 'Winner', required: false },
+      { model: models.League, required: false }
+    ]}
+  ]
+
   findLeague = (leagueId) -> new Promise (resolve, reject) ->
     models.League.find({
       where: {id: leagueId},
-      include: [
-        { model: models.Player, required: false },
-        { model: models.User, as: 'Admins', required: false },
-        { model: models.Frame, required: false, include: [
-          { model: models.Player, as: 'Player1', required: false },
-          { model: models.Player, as: 'Player2', required: false },
-          { model: models.Player, as: 'Winner', required: false },
-          { model: models.League, required: false }
-        ]}
-      ]
+      include: leagueIncludes
     }).then(resolve).catch(reject)
 
   router.get '/leagues', (request, response) ->
-    models.Admin.all({
-      where: { UserId: request.user.id }
-    }).then (admins) ->
-      leagueIds = Sequelize.Utils._.map admins, (admin) ->
-        admin.LeagueId
-      models.League.all({
-        include: [
-          { model: models.Player, required: false },
-          { model: models.User, as: 'Admins', required: false }
-        ],
-        where:
-          $or: [
-            { public: true },
-            { id: { $in: leagueIds } }
-          ]
-      }).then (leagues) ->
-        response.json(leagues)
+    request.user.getLeagues().then (leagues) ->
+      response.json(leagues)
 
   router.post '/leagues', (request, response) ->
     models.League.create(request.body).then((league) ->

@@ -11,10 +11,9 @@ module.exports = function(Sequelize, DataTypes) {
   var User = Sequelize.define("User", schema, {
     classMethods: {
       associate: function(models) {
-        User.belongsToMany(models.League, { as: 'AdministeredLeagues', through: 'Admin' })
+        User.belongsToMany(models.League, { through: 'Admin' })
       }
     }
   });
-
   return User;
 };
