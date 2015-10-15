@@ -8,7 +8,9 @@ module.exports = ->
 
   leagueIncludes = [
     { model: models.Player, required: false },
-    { model: models.Admin, required: false },
+    { model: models.Admin, required: false, include: [
+      { model: models.User, required: false }
+    ]},
     { model: models.Frame, required: false, include: [
       { model: models.Player, as: 'Player1', required: false },
       { model: models.Player, as: 'Player2', required: false },
@@ -23,7 +25,7 @@ module.exports = ->
       include: leagueIncludes
 
   router.get '/leagues', (request, response) ->
-    request.user.getLeagues().then (leagues) ->
+    request.user.getLeagues(include: leagueIncludes).then (leagues) ->
       response.json(leagues)
 
   router.post '/leagues', (request, response) ->
