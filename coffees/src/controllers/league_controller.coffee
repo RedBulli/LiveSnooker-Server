@@ -25,6 +25,25 @@ module.exports = ->
       include: leagueIncludes
 
   router.get '/leagues', (request, response) ->
+    models.League.findAll(
+      include: [
+        { model: models.Player, required: false },
+        {
+          model: models.Admin,
+          required: true,
+          include: [
+            { model: models.User, required: false }
+          ],
+          where: { UserId: request.user.id }
+        },
+        { model: models.Frame, required: false, include: [
+          { model: models.Player, as: 'Player1', required: false },
+          { model: models.Player, as: 'Player2', required: false },
+          { model: models.Player, as: 'Winner', required: false },
+          { model: models.League, required: false }
+        ]}
+      ]
+    )
     request.user.getLeagues(include: leagueIncludes).then (leagues) ->
       response.json(leagues)
 
