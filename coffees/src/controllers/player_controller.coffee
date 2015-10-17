@@ -48,11 +48,17 @@ module.exports = ->
 
   router.put '/players/:id', (request, response) ->
     request.player.set("name", request.body["name"]);
-    request.player.save()
-    data =
-      event: "playerUpdate"
-      player: request.player.toJSON()
-    request.app.get('redisClient').publish(request.player.LeagueId, JSON.stringify(data))
-    response.status(200).json("")
+    request.player.save(
+    ).then( ->
+      data =
+        event: "playerUpdate"
+        player: request.player.toJSON()
+      request.app.get('redisClient').publish(request.player.LeagueId, JSON.stringify(data))
+      response.status(200).json("")
+    ).catch (error) ->
+      if error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError"
+        response.status(400).json(error: error)
+      else
+        response.status(500).json(error: error)
 
   router

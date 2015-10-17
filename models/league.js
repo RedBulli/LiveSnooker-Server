@@ -17,6 +17,9 @@ module.exports = function(Sequelize, DataTypes) {
           League.hasMany(models.Admin);
         }
       },
+      indexes: [
+        { unique: true, fields: ['name'], where: { deleted: false } }
+      ],
       defaultScope: {
         where: {
           deleted: false
