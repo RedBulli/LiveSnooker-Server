@@ -3,6 +3,8 @@ request = require 'request'
 models  = require '../../models'
 _ = require 'underscore'
 
+getOrCreateQueue = {}
+
 parseGoogleToken = (token, callback) ->
   request 'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=' + token, (error, response, body) ->
     if (!error && response.statusCode == 200)
@@ -11,17 +13,23 @@ parseGoogleToken = (token, callback) ->
       callback("ERROR!")
 
 createUserWithAuthentication = (authData, email, cb) ->
-  models.User.create(email: email).then (user) ->
-    auth = models.Authentication.build(authData)
-    auth.setUser(user, save: false)
-    auth.save(cb(user))
+  new Promise (resolve, reject) ->
+    models.User.create(email: email).then (user) ->
+      auth = models.Authentication.build(authData)
+      auth.setUser(user, save: false)
+      auth.save().then(resolve).catch(reject)
 
-getOrCreateUser = (authData, email, cb) ->
-  models.Authentication.find({ where: authData }).then (authentication) ->
-    if !authentication
-      createUserWithAuthentication(authData, email, cb)
-    else
-      authentication.getUser().then(cb)
+getOrCreateUser = (authData, email) ->
+  unless getOrCreateUser[email]
+    getOrCreateUser[email] = new Promise (resolve, reject) ->
+      models.Authentication.find({ where: authData }).then (authentication) ->
+        delete getOrCreateUser[email]
+        if !authentication
+          createUserWithAuthentication(authData, email).then(resolve).catch(reject)
+        else
+          authentication.getUser().then(resolve).catch(reject)
+
+  getOrCreateUser[email]
 
 validateLeagueAuth = (leagueId, request, response, next) ->
   responseNotFound = ->
@@ -52,9 +60,11 @@ jwtAuthentication = (request, response, next) ->
     parseGoogleToken token, (err, googleUser) ->
       if !err
         authData = {vendorUserId: googleUser.user_id, vendor: 'google'}
-        getOrCreateUser authData, googleUser.email, (user) ->
+        getOrCreateUser(authData, googleUser.email).then((user) ->
           request.user = user
           next()
+        ).catch ->
+          response.sendStatus 500
       else
         response.sendStatus 401
   else

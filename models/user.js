@@ -5,7 +5,7 @@ module.exports = function(Sequelize, DataTypes) {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4
     },
-    email: { type: DataTypes.STRING, allowNull: false }
+    email: { type: DataTypes.STRING, unique: true, allowNull: false }
   };
 
   var User = Sequelize.define("User", schema, {
