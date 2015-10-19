@@ -25,7 +25,7 @@ module.exports = ->
       include: leagueIncludes
 
   router.get '/leagues', authMiddleware.requireAuth, (request, response) ->
-    request.user.getLeagues().then (leagues) ->
+    request.user.getLeagues(include: leagueIncludes).then (leagues) ->
       response.json(leagues)
 
   router.post '/leagues', (request, response) ->
@@ -62,7 +62,21 @@ module.exports = ->
         { model: models.Player, as: 'Winner', required: false },
         { model: models.Shot, required: false }
       ]
-    }).then (frames) ->
-      response.json(frames)
+    })
+      .then (frames) -> response.json(frames)
+      .catch (error) -> response.status(500).json(error: error)
+
+  router.post '/leagues/:id/admins', (request, response) ->
+    models.Admin.create(request.body)
+      .then (admin) -> response.status(201).json(admin)
+      .catch (error) -> response.status(500).json(error: error)
+
+  router.delete '/leagues/:id/admins/:adminId', (request, response) ->
+    models.Admin.destroy(where: {
+      LeagueId: request.params.id
+      id: request.params.adminId
+    })
+      .then -> response.status(204).json("")
+      .catch (error) -> response.status(500).json(error: error)
 
   router

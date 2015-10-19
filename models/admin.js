@@ -1,7 +1,12 @@
 module.exports = function(Sequelize, DataTypes) {
   var schema = {
+    id: {
+      primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4
+    },
     write: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
-    UserEmail: { type: DataTypes.STRING, allowNull: false }
+    UserEmail: { type: DataTypes.STRING, allowNull: false },
   };
   var Admin = Sequelize.define("Admin", schema, {
     classMethods: {
