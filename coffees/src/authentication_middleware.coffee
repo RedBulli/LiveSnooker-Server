@@ -12,24 +12,21 @@ parseGoogleToken = (token, callback) ->
     else
       callback("ERROR!")
 
-createUserWithAuthentication = (authData, email, cb) ->
-  new Promise (resolve, reject) ->
-    models.User.create(email: email).then (user) ->
-      auth = models.Authentication.build(authData)
-      auth.setUser(user, save: false)
-      auth.save().then(resolve).catch(reject)
+createUser = (email) ->
+  models.User.create(email: email)
 
-getOrCreateUser = (authData, email) ->
-  unless getOrCreateUser[email]
-    getOrCreateUser[email] = new Promise (resolve, reject) ->
-      models.Authentication.find({ where: authData }).then (authentication) ->
-        delete getOrCreateUser[email]
-        if !authentication
-          createUserWithAuthentication(authData, email).then(resolve).catch(reject)
-        else
-          authentication.getUser().then(resolve).catch(reject)
-
-  getOrCreateUser[email]
+getOrCreateUser = (authData) ->
+  email = authData.email
+  unless getOrCreateQueue[email]
+    getOrCreateQueue[email] = models.User.find({where: {email: email}}).then (user) ->
+      if user
+        user
+      else
+        models.User.create(email: email)
+    .then (user) ->
+      delete getOrCreateQueue[email]
+      user
+  getOrCreateQueue[email]
 
 validateLeagueAuth = (leagueId, request, response, next) ->
   responseNotFound = ->
@@ -59,11 +56,12 @@ jwtAuthentication = (request, response, next) ->
   if token
     parseGoogleToken token, (err, googleUser) ->
       if !err
-        authData = {vendorUserId: googleUser.user_id, vendor: 'google'}
-        getOrCreateUser(authData, googleUser.email).then((user) ->
+        authData = {vendorUserId: googleUser.user_id, vendor: 'google', email: googleUser.email}
+        getOrCreateUser(authData).then((user) ->
           request.user = user
           next()
-        ).catch ->
+        ).catch (err) ->
+          console.error err
           response.sendStatus 500
       else
         response.sendStatus 401

@@ -1,17 +1,17 @@
 module.exports = function(Sequelize, DataTypes) {
   var schema = {
-    id: {
-      primaryKey: true,
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4
-    },
-    email: { type: DataTypes.STRING, unique: true, allowNull: false }
+    email: { type: DataTypes.STRING, primaryKey: true }
   };
 
   var User = Sequelize.define("User", schema, {
     classMethods: {
       associate: function(models) {
-        User.belongsToMany(models.League, { through: 'Admin' })
+        User.belongsToMany(models.League, {
+          through: { model: models.Admin, unique: true },
+          as: 'leagues',
+          foreignKey: 'UserEmail',
+          constraints: false
+        });
       }
     }
   });

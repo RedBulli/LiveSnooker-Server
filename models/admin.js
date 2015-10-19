@@ -6,7 +6,6 @@ module.exports = function(Sequelize, DataTypes) {
     classMethods: {
       associate: function(models) {
         Admin.belongsTo(models.League, { foreignKey: {allowNull: false}, onDelete: "CASCADE" });
-        Admin.belongsTo(models.User, { foreignKey: {allowNull: false}, onDelete: "CASCADE" });
       }
     }
   });

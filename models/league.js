@@ -24,6 +24,13 @@ module.exports = function(Sequelize, DataTypes) {
         where: {
           deleted: false
         }
+      },
+      scopes: {
+        belongsToAdmin: function(email) {
+          return {
+            include: [{ model: models.Admin, required: true, where: {UserEmail: "sampo.verkasalo@gmail.com"}}]
+          }
+        }
       }
     }
   )

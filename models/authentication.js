@@ -1,7 +1,7 @@
 module.exports = function(Sequelize, DataTypes) {
   var schema = {
     vendorUserId: { type: DataTypes.STRING, allowNull: false, unique: 'vendorIndex' },
-    vendor: { type: DataTypes.STRING, allowNull: false, unique: 'vendorIndex' }
+    vendor: { type: DataTypes.STRING, allowNull: false, unique: 'vendorIndex' },
   };
   var Authentication = Sequelize.define("Authentication", schema, {
       classMethods: {
