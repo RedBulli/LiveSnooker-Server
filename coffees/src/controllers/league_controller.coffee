@@ -25,8 +25,9 @@ module.exports = ->
       include: leagueIncludes
 
   router.get '/leagues', authMiddleware.requireAuth, (request, response) ->
-    request.user.getLeagues(include: leagueIncludes).then (leagues) ->
-      response.json(leagues)
+    request.user.getLeagues(include: leagueIncludes)
+      .then (leagues) -> response.json(leagues)
+      .catch (error) -> response.status(500).json(error: error)
 
   router.post '/leagues', (request, response) ->
     models.sequelize.transaction(->
@@ -45,7 +46,8 @@ module.exports = ->
       else
         response.status(500).json(error: error)
 
-  router.all '/leagues/:id/:op?', (req, resp, next) -> authMiddleware.validateLeagueAuth(req.params.id, req, resp, next)
+  router.all ['/leagues/:id/:op?', '/leagues/:id/:op?/:op?'], (req, resp, next) ->
+    authMiddleware.validateLeagueAuth(req.params.id, req, resp, next)
 
   router.get '/leagues/:id', (request, response) ->
     findLeague(request.params.id)
@@ -72,11 +74,15 @@ module.exports = ->
       .catch (error) -> response.status(500).json(error: error)
 
   router.delete '/leagues/:id/admins/:adminId', (request, response) ->
-    models.Admin.destroy(where: {
-      LeagueId: request.params.id
-      id: request.params.adminId
-    })
-      .then -> response.status(204).json("")
-      .catch (error) -> response.status(500).json(error: error)
+    request.league.getAdmins().then (admins) ->
+      if admins.length < 2
+        response.status(400).json(error: "Cannot remove last admin")
+      else
+        models.Admin.destroy(where: {
+          LeagueId: request.params.id
+          id: request.params.adminId
+        })
+          .then -> response.status(204).json("")
+          .catch (error) -> response.status(500).json(error: error)
 
   router
