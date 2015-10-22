@@ -18,10 +18,10 @@ module.exports = function(Sequelize, DataTypes) {
       allowNull: false
     },
     points: {
-      type: DataTypes.INTEGER, // Negative integers are fouls
+      type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
-        min: -7,
+        min: 0,
         max: 16
       }
     },
@@ -41,6 +41,13 @@ module.exports = function(Sequelize, DataTypes) {
         associate: function(models) {
           Shot.belongsTo(models.Frame, { foreignKey: 'FrameId', onDelete: "CASCADE" });
           Shot.belongsTo(models.Player, { as: 'Player', foreignKey: {allowNull: false}, onDelete: "CASCADE" });
+        }
+      },
+      validate: {
+        foulPoints: function() {
+          if ((this.result === "foul") && ((this.points < 4) || (this.points > 7))) {
+            throw new Error('Foul points must be 4 - 7')
+          }
         }
       }
     }
