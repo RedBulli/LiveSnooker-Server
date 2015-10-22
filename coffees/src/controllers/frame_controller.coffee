@@ -112,4 +112,17 @@ module.exports = ->
         response.status(200).json(request.frame)
       else
         response.status(400).json(error: "WinnerId is not a player in this frame")
+
+  router.patch '/frames/:id/playerchange', (request, response) ->
+    playerId = request.body.currentPlayer.id
+    if playerId == request.frame.get('Player1Id') || playerId == request.frame.get('Player2Id')
+      data =
+        event: "changePlayer"
+        frame: request.frame.toJSON()
+        playerId: playerId
+      request.app.get('redisClient').publish(request.frame.get('id'), JSON.stringify(data))
+      response.status(200).json(request.frame)
+    else
+      response.status(400).json(error: "Player must be in the frame")
+
   router

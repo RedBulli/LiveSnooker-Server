@@ -42,12 +42,11 @@ module.exports = ->
         shot: shot.toJSON()
       request.app.get('redisClient').publish(shot.FrameId, JSON.stringify(data));
       response.status(201).json(shot)
-    .catch((error) ->
+    .catch (error) ->
       if error.name == "SequelizeValidationError" || error.name == "SequelizeUniqueConstraintError"
         response.status(400).json(error: error)
       else
         response.status(500).json(error: error)
-    )
 
   router.delete '/shots/:id', (request, response) ->
     models.Shot.findOne({
