@@ -71,9 +71,9 @@ module.exports = ->
       request.app.get('redisClient').publish(frame.LeagueId, JSON.stringify(data))
       response.status(201).json(frame)
 
-  router.all '/:id/:op?', (request, response, next) ->
+  router.all '/:frameId/:op?', (request, response, next) ->
     FrameScope(request).findOne(
-      where: {id: request.params.id},
+      where: {id: request.params.frameId},
       include: [
         { model: models.Player, as: 'Winner', required: false },
         { model: models.Player, as: 'Player1', required: false },
@@ -85,14 +85,14 @@ module.exports = ->
       request.frame = frame
       next()
     ).catch( ->
-      response.status(400).json(error: 'cannot find user ' + request.params.id)
+      response.status(400).json(error: 'cannot find user ' + request.params.frameId)
       response.end()
     )
 
-  router.get '/:id', (request, response) ->
+  router.get '/:frameId', (request, response) ->
     response.json(request.frame)
 
-  router.delete '/:id', (request, response) ->
+  router.delete '/:frameId', (request, response) ->
     if request.frame.WinnerId
       response.status(400).json(error: "Deleting completed frames is not allowed.")
     else
@@ -103,7 +103,7 @@ module.exports = ->
       request.app.get('redisClient').publish(request.frame.LeagueId, JSON.stringify(data))
       response.status(204).json("")
 
-  router.patch '/:id', (request, response) ->
+  router.patch '/:frameId', (request, response) ->
     if request.frame.WinnerId
       response.status(400).json(error: "Changing the winner is not allowed.")
     else
@@ -120,7 +120,7 @@ module.exports = ->
       else
         response.status(400).json(error: "WinnerId is not a player in this frame")
 
-  router.patch '/:id/playerchange', (request, response) ->
+  router.patch '/:frameId/playerchange', (request, response) ->
     playerId = request.body.currentPlayer.id
     if playerId == request.frame.get('Player1Id') || playerId == request.frame.get('Player2Id')
       data =
@@ -131,5 +131,7 @@ module.exports = ->
       response.status(200).json(request.frame)
     else
       response.status(400).json(error: "Player must be in the frame")
+
+  router.use('/:frameId/shots', require('./shot_controller')())
 
   router

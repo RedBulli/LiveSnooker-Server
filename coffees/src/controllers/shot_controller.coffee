@@ -18,15 +18,26 @@ validateShotNumber = (request, response, next) ->
       else
         next()
 
+ShotScope = (request) ->
+  models.Shot.scope({ method: ['inFrame', request.frame.id]})
+
 module.exports = ->
   router = express.Router()
 
   router.get '/', (request, response) ->
-    models.Shot.all().then (shots) ->
+    ShotScope(request).findAll().then (shots) ->
       response.json(shots)
 
   router.post '/', validateShotNumber, (request, response) ->
-    models.Shot.create(request.body).then (shot) ->
+    shotData =
+      FrameId: request.frame.id
+      PlayerId: request.body["PlayerId"]
+      attempt: request.body["attempt"]
+      points: request.body["points"]
+      result: request.body["result"]
+      shotNumber: request.body["shotNumber"]
+
+    models.Shot.create(shotData).then (shot) ->
       data =
         event: "newShot"
         shot: shot.toJSON()

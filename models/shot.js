@@ -49,6 +49,11 @@ module.exports = function(Sequelize, DataTypes) {
             throw new Error('Foul points must be 4 - 7')
           }
         }
+      },
+      scopes: {
+        inFrame: function(frameId) {
+          return { where: { FrameId: frameId } };
+        }
       }
     }
   );
