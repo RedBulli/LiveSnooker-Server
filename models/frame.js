@@ -18,6 +18,11 @@ module.exports = function(Sequelize, DataTypes) {
           Frame.belongsTo(models.Player, { as: 'Winner', foreignKey: {allowNull: true}, onDelete: "RESTRICT" });
           Frame.hasMany(models.Shot, { onDelete: "CASCADE" });
         }
+      },
+      scopes: {
+        inLeague: function(leagueId) {
+          return { where: { LeagueId: leagueId } };
+        }
       }
     }
   );

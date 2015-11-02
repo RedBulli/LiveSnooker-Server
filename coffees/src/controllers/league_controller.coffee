@@ -47,29 +47,10 @@ module.exports = ->
       else
         response.status(500).json(error: error)
 
-  router.all ['/:id/:op?', '/:id/:op?/:op?'], (req, resp, next) ->
-    authMiddleware.validateLeagueAuth(req.params.id, req, resp, next)
+  router.get '/:leagueId', (request, response) ->
+    response.json(request.league)
 
-  router.get '/:id', (request, response) ->
-    findLeague(request.params.id)
-      .then (league) -> response.json(league)
-      .catch (error) -> response.status(500).json(error: error)
-
-  router.get '/:id/frames', (request, response) ->
-    models.Frame.findAll({
-      where: {LeagueId: request.params.id},
-      include: [
-        { model: models.Player, as: 'Player1', required: false },
-        { model: models.Player, as: 'Player2', required: false },
-        { model: models.League, required: false },
-        { model: models.Player, as: 'Winner', required: false },
-        { model: models.Shot, required: false }
-      ]
-    })
-      .then (frames) -> response.json(frames)
-      .catch (error) -> response.status(500).json(error: error)
-
-  router.post '/:id/admins', (request, response) ->
+  router.post '/:leagueId/admins', (request, response) ->
     if isEmail(request.body.UserEmail)
       models.Admin.create(request.body)
         .then (admin) -> response.status(201).json(admin)
@@ -77,7 +58,7 @@ module.exports = ->
     else
       response.status(400).json(error: "Invalid email")
 
-  router.delete '/:id/admins/:adminId', (request, response) ->
+  router.delete '/:leagueId/admins/:adminId', (request, response) ->
     request.league.getAdmins().then (admins) ->
       if admins.length < 2
         response.status(400).json(error: "Cannot remove last admin")

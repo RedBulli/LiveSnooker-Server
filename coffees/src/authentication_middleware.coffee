@@ -45,7 +45,7 @@ validateLeagueAuth = (leagueId, request, response, next) ->
         responseNotFound()
       else
         models.Admin.count(
-          where: {UserEmail: request.user.email, LeagueId: request.params.id}
+          where: {UserEmail: request.user.email, LeagueId: leagueId}
         ).then (count) ->
           if count == 0
             responseNotFound()

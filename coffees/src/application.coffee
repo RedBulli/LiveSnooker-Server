@@ -58,12 +58,16 @@ createApp = (callback) ->
   router.put '*', authMiddleWare.requireAuth
   router.patch '*', authMiddleWare.requireAuth
   router.delete '*', authMiddleWare.requireAuth
+
+  router.all ['/leagues/:leagueId*'], (req, resp, next) ->
+    authMiddleWare.validateLeagueAuth(req.params.leagueId, req, resp, next)
+
   app.use(router)
   app.use(require('./streaming_api')())
   app.use(require('./api')())
-  app.use('/frames', require('./controllers/frame_controller')())
-  app.use('/players', require('./controllers/player_controller')())
   app.use('/leagues', require('./controllers/league_controller')())
+  app.use('/leagues/:leagueId/frames', require('./controllers/frame_controller')())
+  app.use('/players', require('./controllers/player_controller')())
   app.use('/shots', require('./controllers/shot_controller')())
   app.use serverErrorHandling
 

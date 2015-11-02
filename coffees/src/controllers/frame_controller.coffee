@@ -48,11 +48,14 @@ validatePlayersBelongToLeague = (request, response, next) ->
 validateLeaguePrivileges = (request, response, next) ->
   next() # TODO: Check if the user is in the league
 
+FrameScope = (request) ->
+  models.Frame.scope({ method: ['inLeague', request.league.id]})
+
 module.exports = ->
   router = express.Router()
 
   router.get '/', (request, response) ->
-    models.Frame.all().then (frames) ->
+    FrameScope(request).findAll().then (frames) ->
       response.json(frames)
 
   router.post '/', validateLeaguePrivileges, validateNewFrame, (request, response) ->
@@ -63,9 +66,8 @@ module.exports = ->
       request.app.get('redisClient').publish(frame.LeagueId, JSON.stringify(data))
       response.status(201).json(frame)
 
-  router.all '/:id/:op?', validateLeaguePrivileges
   router.all '/:id/:op?', (request, response, next) ->
-    models.Frame.findOne(
+    FrameScope(request).findOne(
       where: {id: request.params.id},
       include: [
         { model: models.Player, as: 'Winner', required: false },
