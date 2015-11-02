@@ -7,12 +7,19 @@ module.exports = ->
 
   playerIncludes = [{ model: models.League }]
 
+  PlayersScope = (request) ->
+    models.Player.scope({ method: ['inLeague', request.league.id]})
+
   router.get '/', (request, response) ->
-    models.Player.all(include: playerIncludes).then (players) ->
+    PlayersScope(request).findAll(include: playerIncludes).then (players) ->
       response.json(players)
 
   router.post '/', (request, response) ->
-    models.Player.create(request.body).then((player) ->
+    playerData =
+      LeagueId: request.league.id
+      name: request.body["name"]
+
+    models.Player.create(playerData).then((player) ->
       data =
         event: "newPlayer"
         player: player.toJSON()
@@ -27,7 +34,7 @@ module.exports = ->
     )
 
   router.all '/:id/:op?', (request, response, next) ->
-    models.Player.findOne(
+    PlayersScope(request).findOne(
       where: {id: request.params.id}
     ).then((player) ->
       request.player = player

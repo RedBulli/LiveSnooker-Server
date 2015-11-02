@@ -59,7 +59,12 @@ module.exports = ->
       response.json(frames)
 
   router.post '/', validateLeaguePrivileges, validateNewFrame, (request, response) ->
-    models.Frame.create(request.body).then (frame) ->
+    frameData =
+      LeagueId: request.league.id
+      Player1Id: request.body["Player1Id"]
+      Player2Id: request.body["Player2Id"]
+
+    models.Frame.create(frameData).then (frame) ->
       data =
         event: "frameStart"
         frame: frame.toJSON()

@@ -18,6 +18,11 @@ module.exports = function(Sequelize, DataTypes) {
         where: {
           deleted: false
         }
+      },
+      scopes: {
+        inLeague: function(leagueId) {
+          return { where: { LeagueId: leagueId } };
+        }
       }
     }
   )
