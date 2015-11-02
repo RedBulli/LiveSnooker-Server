@@ -7,11 +7,11 @@ module.exports = ->
 
   playerIncludes = [{ model: models.League }]
 
-  router.get '/players', (request, response) ->
+  router.get '/', (request, response) ->
     models.Player.all(include: playerIncludes).then (players) ->
       response.json(players)
 
-  router.post '/players', (request, response) ->
+  router.post '/', (request, response) ->
     models.Player.create(request.body).then((player) ->
       data =
         event: "newPlayer"
@@ -26,7 +26,7 @@ module.exports = ->
         response.status(500).json(error: error)
     )
 
-  router.all '/players/:id/:op?', (request, response, next) ->
+  router.all '/:id/:op?', (request, response, next) ->
     models.Player.findOne(
       where: {id: request.params.id}
     ).then((player) ->
@@ -37,7 +37,7 @@ module.exports = ->
       response.end()
     )
 
-  router.delete '/players/:id', (request, response) ->
+  router.delete '/:id', (request, response) ->
     request.player.set("deleted", true)
     request.player.save()
     data =
@@ -46,7 +46,7 @@ module.exports = ->
     request.app.get('redisClient').publish(request.player.LeagueId, JSON.stringify(data))
     response.status(204).json("")
 
-  router.put '/players/:id', (request, response) ->
+  router.put '/:id', (request, response) ->
     request.player.set("name", request.body["name"]);
     request.player.save(
     ).then( ->

@@ -21,21 +21,11 @@ validateShotNumber = (request, response, next) ->
 module.exports = ->
   router = express.Router()
 
-  router.get '/shots', (request, response) ->
+  router.get '/', (request, response) ->
     models.Shot.all().then (shots) ->
       response.json(shots)
 
-  router.get '/shots/:id', (request, response) ->
-    models.Shot.find({
-      where: {id: request.params.id},
-      include: [
-        { model: models.Player },
-        { model: models.League }
-      ]
-    }).then (shot) ->
-      response.json(shot)
-
-  router.post '/shots', validateShotNumber, (request, response) ->
+  router.post '/', validateShotNumber, (request, response) ->
     models.Shot.create(request.body).then (shot) ->
       data =
         event: "newShot"
@@ -48,7 +38,17 @@ module.exports = ->
       else
         response.status(500).json(error: error)
 
-  router.delete '/shots/:id', (request, response) ->
+  router.get '/:id', (request, response) ->
+    models.Shot.find({
+      where: {id: request.params.id},
+      include: [
+        { model: models.Player },
+        { model: models.League }
+      ]
+    }).then (shot) ->
+      response.json(shot)
+
+  router.delete '/:id', (request, response) ->
     models.Shot.findOne({
       where: {id: request.params.id},
     }).then (shot) ->

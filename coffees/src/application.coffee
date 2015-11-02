@@ -61,10 +61,10 @@ createApp = (callback) ->
   app.use(router)
   app.use(require('./streaming_api')())
   app.use(require('./api')())
-  app.use(require('./controllers/frame_controller')())
-  app.use(require('./controllers/player_controller')())
-  app.use(require('./controllers/league_controller')())
-  app.use(require('./controllers/shot_controller')())
+  app.use('/frames', require('./controllers/frame_controller')())
+  app.use('/players', require('./controllers/player_controller')())
+  app.use('/leagues', require('./controllers/league_controller')())
+  app.use('/shots', require('./controllers/shot_controller')())
   app.use serverErrorHandling
 
   app.set("redisClient", require('./redis_client')())

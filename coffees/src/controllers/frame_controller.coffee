@@ -51,11 +51,11 @@ validateLeaguePrivileges = (request, response, next) ->
 module.exports = ->
   router = express.Router()
 
-  router.get '/frames', (request, response) ->
+  router.get '/', (request, response) ->
     models.Frame.all().then (frames) ->
       response.json(frames)
 
-  router.post '/frames', validateLeaguePrivileges, validateNewFrame, (request, response) ->
+  router.post '/', validateLeaguePrivileges, validateNewFrame, (request, response) ->
     models.Frame.create(request.body).then (frame) ->
       data =
         event: "frameStart"
@@ -63,8 +63,8 @@ module.exports = ->
       request.app.get('redisClient').publish(frame.LeagueId, JSON.stringify(data))
       response.status(201).json(frame)
 
-  router.all '/frames/:id/:op?', validateLeaguePrivileges
-  router.all '/frames/:id/:op?', (request, response, next) ->
+  router.all '/:id/:op?', validateLeaguePrivileges
+  router.all '/:id/:op?', (request, response, next) ->
     models.Frame.findOne(
       where: {id: request.params.id},
       include: [
@@ -82,10 +82,10 @@ module.exports = ->
       response.end()
     )
 
-  router.get '/frames/:id', (request, response) ->
+  router.get '/:id', (request, response) ->
     response.json(request.frame)
 
-  router.delete '/frames/:id', (request, response) ->
+  router.delete '/:id', (request, response) ->
     if request.frame.WinnerId
       response.status(400).json(error: "Deleting completed frames is not allowed.")
     else
@@ -96,7 +96,7 @@ module.exports = ->
       request.app.get('redisClient').publish(request.frame.LeagueId, JSON.stringify(data))
       response.status(204).json("")
 
-  router.patch '/frames/:id', (request, response) ->
+  router.patch '/:id', (request, response) ->
     if request.frame.WinnerId
       response.status(400).json(error: "Changing the winner is not allowed.")
     else
@@ -113,7 +113,7 @@ module.exports = ->
       else
         response.status(400).json(error: "WinnerId is not a player in this frame")
 
-  router.patch '/frames/:id/playerchange', (request, response) ->
+  router.patch '/:id/playerchange', (request, response) ->
     playerId = request.body.currentPlayer.id
     if playerId == request.frame.get('Player1Id') || playerId == request.frame.get('Player2Id')
       data =

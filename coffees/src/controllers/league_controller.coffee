@@ -32,12 +32,12 @@ module.exports = ->
       where: { id: leagueId }
       include: leagueIncludes
 
-  router.get '/leagues', authMiddleware.requireAuth, (request, response) ->
+  router.get '/', authMiddleware.requireAuth, (request, response) ->
     request.user.getLeagues(include: leagueIncludes)
       .then (leagues) -> response.json(leagues)
       .catch (error) -> response.status(500).json(error: error)
 
-  router.post '/leagues', (request, response) ->
+  router.post '/', (request, response) ->
     models.sequelize.transaction(->
       models.League.create(request.body).then (league) ->
         models.Admin.create
@@ -54,15 +54,15 @@ module.exports = ->
       else
         response.status(500).json(error: error)
 
-  router.all ['/leagues/:id/:op?', '/leagues/:id/:op?/:op?'], (req, resp, next) ->
+  router.all ['/:id/:op?', '/:id/:op?/:op?'], (req, resp, next) ->
     authMiddleware.validateLeagueAuth(req.params.id, req, resp, next)
 
-  router.get '/leagues/:id', (request, response) ->
+  router.get '/:id', (request, response) ->
     findLeague(request.params.id)
       .then (league) -> response.json(league)
       .catch (error) -> response.status(500).json(error: error)
 
-  router.get '/leagues/:id/frames', (request, response) ->
+  router.get '/:id/frames', (request, response) ->
     models.Frame.findAll({
       where: {LeagueId: request.params.id},
       include: [
@@ -76,7 +76,7 @@ module.exports = ->
       .then (frames) -> response.json(frames)
       .catch (error) -> response.status(500).json(error: error)
 
-  router.post '/leagues/:id/admins', (request, response) ->
+  router.post '/:id/admins', (request, response) ->
     if EMAIL_REGEX.test(request.body.UserEmail)
       models.Admin.create(request.body)
         .then (admin) -> response.status(201).json(admin)
@@ -84,7 +84,7 @@ module.exports = ->
     else
       response.status(400).json(error: "Invalid email")
 
-  router.delete '/leagues/:id/admins/:adminId', (request, response) ->
+  router.delete '/:id/admins/:adminId', (request, response) ->
     request.league.getAdmins().then (admins) ->
       if admins.length < 2
         response.status(400).json(error: "Cannot remove last admin")
