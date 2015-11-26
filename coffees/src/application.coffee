@@ -1,13 +1,19 @@
-module.exports.listen = (port, callback) ->
-  createApp (app) ->
-    server = app.listen port
-    app.io = require('socket.io')(server)
-    app.io.sockets.on 'connection', (socket) ->
-      socket.on 'message', (data) ->
-        socket.broadcast.emit('message', data)
-    callback(server)
+module.exports.listen = (port) ->
+  new Promise (resolve, reject) ->
+    createApp()
+      .then (app) ->
+        server = app.listen port
+        initSocketIo(app, server)
+        resolve()
+      .catch reject
 
-createApp = (callback) ->
+initSocketIo = (app, server) ->
+  app.io = require('socket.io')(server)
+  app.io.sockets.on 'connection', (socket) ->
+    socket.on 'message', (data) ->
+      socket.broadcast.emit('message', data)
+
+createApp = ->
   express = require 'express'
   bodyParser = require 'body-parser'
   errors = require './errors'
@@ -72,5 +78,8 @@ createApp = (callback) ->
 
   app.set("redisClient", require('./redis_client')())
 
-  models.sequelize.sync().then ->
-    callback(app)
+  new Promise (resolve, reject) ->
+    models.sequelize.sync()
+      .then ->
+        resolve(app)
+      .catch reject
