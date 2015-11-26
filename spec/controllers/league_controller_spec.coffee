@@ -3,11 +3,11 @@ nock = require 'nock'
 expect = require('chai').expect
 require '../spec_helper'
 
-describe 'Account controller', ->
+describe 'League controller', ->
   describe 'without authentication', ->
     it 'returns 401', (done) ->
       request($app)
-        .get('/account')
+        .get('/leagues')
         .expect(401, done)
 
   describe 'with authentication', ->
@@ -26,9 +26,7 @@ describe 'Account controller', ->
 
     it 'returns the user', (done) ->
       request($app)
-        .get '/account'
+        .get '/leagues'
         .set 'x-auth-google-id-token', token
-        .expect (res) ->
-          expect(res.body)
-            .to.have.deep.property('user.email', 'sampo.verkasalo@gmail.com')
+        .expect []
         .expect(200, done)

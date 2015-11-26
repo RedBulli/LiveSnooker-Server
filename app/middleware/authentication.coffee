@@ -38,13 +38,13 @@ getOrCreateUser = (authData) ->
 
 validateLeagueAuth = (leagueId, request, response, next) ->
   responseNotFound = ->
-    response.status(404).json(error: 'not found')
+    response.status(404).json(error: 'Not found')
     response.end()
 
   query = models.League.findOne where: {id: leagueId}
   query.then (league) ->
     unless league
-      return response.status(404).send('{"error": "Not found"}')
+      return response.status(404).json(error: "Not found")
     request.league = league
     if league.get('public')
       next()
@@ -72,9 +72,9 @@ jwtAuthentication = (request, response, next) ->
           next()
         ).catch (err) ->
           console.error err
-          response.status(500).send('{"error": "Internal server error"}')
+          response.status(500).json(error: "Internal server error")
       .catch ->
-        response.status(401).send('{"error": "Unauthorized"}')
+        response.status(401).json(error: "Unauthorized")
   else
     next()
 
@@ -82,7 +82,7 @@ requireAuth = (request, response, next) ->
   if request.user
     next()
   else
-    response.status(401).send('{"error": "Unauthorized"}')
+    response.status(401).json(error: "Unauthorized")
 
 module.exports =
   jwtAuthentication: jwtAuthentication

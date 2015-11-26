@@ -1,7 +1,6 @@
 express = require 'express'
 models  = require '../../models'
 authMiddleware = require '../middleware/authentication'
-Sequelize = require 'sequelize'
 isEmail = require('./../utils').isEmail
 
 module.exports = ->

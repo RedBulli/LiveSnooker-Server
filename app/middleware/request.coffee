@@ -12,7 +12,7 @@ serverErrorHandling = (err, request, response, next) ->
 jsonParser = (request, response, next) ->
   bodyParser.json() request, response, (err) ->
     if err
-      response.status(400).send('{"error": "Invalid JSON"}')
+      response.status(400).json(error: "Invalid JSON")
     else
       next()
 
