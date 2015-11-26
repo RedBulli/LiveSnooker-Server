@@ -1,6 +1,6 @@
 express = require 'express'
 models  = require '../../../models'
-authMiddleware = require '../authentication_middleware'
+authMiddleware = require '../middleware/authentication'
 
 newFrame = (request) ->
   Frame = request.app.get('models').Frame

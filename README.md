@@ -16,10 +16,8 @@ Testing
 -------
 ```
 ./grunt.sh test
-
 ```
 Or
 ```
 ./grunt.sh tdd
-
 ```

@@ -16,13 +16,13 @@ initSocketIo = (app, server) ->
 initApplication = ->
   express = require 'express'
   models = require '../../models'
-  requestMiddleware = require './request_middleware'
+  requestMiddleware = require './middleware/request'
 
   app = express()
   app.use require('cors')()
   app.use requestMiddleware.defaultHeaders
   app.use requestMiddleware.jsonParser
-  app.use require('./authentication_middleware').jwtAuthentication
+  app.use require('./middleware/authentication').jwtAuthentication
   require('./routes')(app)
   app.use requestMiddleware.serverErrorHandling
 

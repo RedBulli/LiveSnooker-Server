@@ -1,5 +1,5 @@
 express = require 'express'
-authMiddleWare = require './authentication_middleware'
+authMiddleWare = require './middleware/authentication'
 
 module.exports = (app) ->
   router = express.Router()
