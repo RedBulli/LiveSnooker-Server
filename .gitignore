@@ -26,3 +26,4 @@ environments/test.env
 environments/production.env
 config/config.json
 bower_components
+tmp

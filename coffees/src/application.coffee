@@ -1,6 +1,6 @@
-module.exports.listen = (port) ->
+listen = (port) ->
   new Promise (resolve, reject) ->
-    startApplication()
+    initApplication()
       .then (app) ->
         server = app.listen port
         initSocketIo(app, server)
@@ -13,7 +13,7 @@ initSocketIo = (app, server) ->
     socket.on 'message', (data) ->
       socket.broadcast.emit('message', data)
 
-startApplication = ->
+initApplication = ->
   express = require 'express'
   models = require '../../models'
   requestMiddleware = require './request_middleware'
@@ -33,3 +33,7 @@ startApplication = ->
       .then ->
         resolve(app)
       .catch reject
+
+module.exports =
+  listen: listen
+  initApplication: initApplication

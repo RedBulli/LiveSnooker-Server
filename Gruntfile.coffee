@@ -4,18 +4,12 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     notify:
-      unit_tests:
+      specs_passed:
         options:
-          message: 'Unit tests passed!'
-      all_tests:
-        options:
-          message: 'All tests passed!'
-      integration_tests:
-        options:
-          message: 'Integration tests passed!'
+          message: 'Tests passed!'
 
     coffee:
-      config:
+      build:
         options:
           bare: true
         files: [
@@ -27,29 +21,47 @@ module.exports = (grunt) ->
             ext: '.js'
           }
         ]
+      tmp:
+        options:
+          bare: true
+        files: [
+          {
+            expand: true
+            cwd: 'coffees'
+            src: ['**/*.coffee']
+            dest: 'tmp'
+            ext: '.js'
+          }
+        ]
 
     mochaTest:
-      options:
-        reporter: 'spec'
-        require: [
-          ->
-            global.rootRequire = (name) ->
-              require(__dirname + '/build/src/' + name)
-          'build/fixtures.js'
-        ]
-      unit:
-        src: ['build/unit_tests/**/*.js']
-      integration:
-        src: ['build/integration_tests/**/*.js']
+      test:
+        src: ['spec/**/*.coffee']
+        options:
+          reporter: 'spec'
+          require: [
+            'coffee-script/register'
+            ->
+              global.rootRequire = (name) ->
+                require(__dirname + '/tmp/src/' + name)
+            ->
+              global.appInit = rootRequire('./application').initApplication()
+          ]
+          timeout: 10000
 
     watch:
-      coffee:
+      build:
         files: 'coffees/**/*.coffee'
-        tasks: ['clean', 'coffee', 'test:unit']
+        tasks: ['clean', 'coffee']
+      spec:
+        files: ['coffees/**/*.coffee', 'spec/**/*.coffee']
+        tasks: ['test']
 
     clean:
-      js:
+      build:
         src: ['build/**/*.js']
+      tmp:
+        src: ['tmp/**/*.js']
 
     nodemon:
       server:
@@ -58,7 +70,7 @@ module.exports = (grunt) ->
         watch: ["build/server.js"]
 
     concurrent:
-      serve: ['nodemon:server', 'watch']
+      serve: ['nodemon:server', 'watch:build']
       options:
         logConcurrentOutput: true
 
@@ -74,17 +86,19 @@ module.exports = (grunt) ->
       production:
         src: 'environments/production.env'
 
-  grunt.registerTask('compile', ['clean:js', 'coffee'])
-  grunt.registerTask('cleanjs', ['clean:js'])
+  grunt.registerTask 'compile', (target) ->
+    if target == 'test'
+      grunt.task.run ['clean:tmp', 'coffee:tmp']
+    else
+      grunt.task.run ['clean:build', 'coffee']
+
+  grunt.registerTask('cleanjs', ['clean:build'])
 
   grunt.registerTask 'test',
-    ['test:unit', 'test:integration', 'notify:all_tests']
+    ['env:test', 'compile:test', 'mochaTest:test', 'notify:specs_passed']
 
-  grunt.registerTask 'test:unit',
-    ['env:test', 'compile', 'mochaTest:unit', 'notify:unit_tests']
-    
-  grunt.registerTask 'test:integration',
-    ['env:test', 'compile', 'mochaTest:integration', 'notify:integration_tests']
+  grunt.registerTask 'tdd',
+    ['watch:spec']
 
   grunt.registerTask 'serve', (target) ->
     if target == 'production'
@@ -93,4 +107,4 @@ module.exports = (grunt) ->
       grunt.task.run(['env:dev', 'coffee', 'concurrent:serve'])
 
   # Default task(s).
-  grunt.registerTask('default', ['coffee', 'test:unit', 'serve'])
+  grunt.registerTask('default', ['coffee', 'test', 'serve'])

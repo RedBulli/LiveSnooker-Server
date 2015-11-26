@@ -32,7 +32,8 @@
     "grunt-notify": "latest",
     "mocha": "latest",
     "superagent": "latest",
-    "supertest": "latest"
+    "supertest": "latest",
+    "coffee-script": "latest"
   },
   "engines": {
     "node": ">=4.1.2"

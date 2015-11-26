@@ -44,7 +44,7 @@ validateLeagueAuth = (leagueId, request, response, next) ->
   query = models.League.findOne where: {id: leagueId}
   query.then (league) ->
     unless league
-      return response.sendStatus 404
+      return response.status(404).send('{"error": "Not found"}')
     request.league = league
     if league.get('public')
       next()
@@ -72,9 +72,9 @@ jwtAuthentication = (request, response, next) ->
           next()
         ).catch (err) ->
           console.error err
-          response.sendStatus 500
+          response.status(500).send('{"error": "Internal server error"}')
       .catch ->
-        response.sendStatus 401
+        response.status(401).send('{"error": "Unauthorized"}')
   else
     next()
 
@@ -82,7 +82,7 @@ requireAuth = (request, response, next) ->
   if request.user
     next()
   else
-    response.sendStatus 401
+    response.status(401).send('{"error": "Unauthorized"}')
 
 module.exports =
   jwtAuthentication: jwtAuthentication

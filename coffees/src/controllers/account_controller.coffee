@@ -1,4 +1,4 @@
-authMiddleware = require './authentication_middleware'
+authMiddleware = require './../authentication_middleware'
 express = require('express')
 
 module.exports = ->
