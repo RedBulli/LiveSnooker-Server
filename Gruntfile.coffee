@@ -47,14 +47,13 @@ module.exports = (grunt) ->
             ->
               global.appInit = rootRequire('./application').initApplication()
           ]
-          timeout: 10000
 
     watch:
       build:
         files: 'app/**/*.coffee'
-        tasks: ['clean', 'coffee']
+        tasks: ['clean:build', 'coffee:build']
       spec:
-        files: ['app/**/*.coffee', 'spec/**/*.coffee']
+        files: ['clean:tmp', 'app/**/*.coffee', 'spec/**/*.coffee']
         tasks: ['test']
 
     clean:
@@ -66,8 +65,6 @@ module.exports = (grunt) ->
     nodemon:
       server:
         script: 'server.js'
-      options:
-        watch: ['server.js']
 
     concurrent:
       serve: ['nodemon:server', 'watch:build']
@@ -96,7 +93,7 @@ module.exports = (grunt) ->
     if target == 'test'
       grunt.task.run ['clean:tmp', 'coffee:tmp']
     else
-      grunt.task.run ['clean:build', 'coffee']
+      grunt.task.run ['clean:build', 'coffee:build']
 
   grunt.registerTask('cleanjs', ['clean:build'])
 
@@ -108,9 +105,9 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'serve', (target) ->
     if target == 'production'
-      grunt.task.run(['env:production', 'coffee', 'execute:server'])
+      grunt.task.run(['env:production', 'coffee:build', 'execute:server'])
     else
-      grunt.task.run(['env:dev', 'coffee', 'concurrent:serve'])
+      grunt.task.run(['env:dev', 'coffee:build', 'concurrent:serve'])
 
   # Default task(s).
-  grunt.registerTask('default', ['coffee', 'test', 'serve'])
+  grunt.registerTask('default', ['test', 'coffee:build', 'serve'])

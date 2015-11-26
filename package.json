@@ -33,7 +33,7 @@
     "grunt-nodemon": "latest",
     "grunt-notify": "latest",
     "mocha": "latest",
-    "superagent": "latest",
+    "nock": "^3.3.2",
     "supertest": "latest"
   },
   "engines": {
