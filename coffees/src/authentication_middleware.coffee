@@ -57,7 +57,7 @@ jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
   if token
     parseGoogleToken token, (err, googleUser) ->
-      if !err
+      if !err && googleUser.audience == process.env.GOOGLE_CLIENT_ID
         authData = {vendorUserId: googleUser.user_id, vendor: 'google', email: googleUser.email}
         getOrCreateUser(authData).then((user) ->
           request.user = user
