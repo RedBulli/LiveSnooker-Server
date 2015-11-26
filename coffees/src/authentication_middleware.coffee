@@ -4,12 +4,21 @@ models  = require '../../models'
 
 pendingUserQueryPromises = {}
 
-parseGoogleToken = (token, callback) ->
-  request 'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=' + token, (error, response, body) ->
-    if (!error && response.statusCode == 200)
-      callback(null, JSON.parse(body))
-    else
-      callback("ERROR!")
+requestTokenInfo = (token) ->
+  new Promise (resolve, reject) ->
+    request 'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=' + token, (error, response, body) ->
+      if !error && response.statusCode == 200
+        resolve(JSON.parse(body))
+      else
+        reject()
+
+getUserData = (token) ->
+  new Promise (resolve, reject) ->
+    requestTokenInfo(token).then (userData) ->
+      if userData.audience == process.env.GOOGLE_CLIENT_ID
+        resolve(userData)
+      else
+        reject()
 
 createUser = (email) ->
   models.User.create(email: email)
@@ -55,8 +64,8 @@ validateLeagueAuth = (leagueId, request, response, next) ->
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
   if token
-    parseGoogleToken token, (err, googleUser) ->
-      if !err && googleUser.audience == process.env.GOOGLE_CLIENT_ID
+    getUserData(token)
+      .then (googleUser) ->
         authData = {vendorUserId: googleUser.user_id, vendor: 'google', email: googleUser.email}
         getOrCreateUser(authData).then((user) ->
           request.user = user
@@ -64,7 +73,7 @@ jwtAuthentication = (request, response, next) ->
         ).catch (err) ->
           console.error err
           response.sendStatus 500
-      else
+      .catch ->
         response.sendStatus 401
   else
     next()
