@@ -86,6 +86,12 @@ module.exports = (grunt) ->
       production:
         src: 'environments/production.env'
 
+    copy:
+      ci:
+        files: [
+          {src: ['config/config.json.sample'], dest: 'config/config.json'}
+        ]
+
   grunt.registerTask 'compile', (target) ->
     if target == 'test'
       grunt.task.run ['clean:tmp', 'coffee:tmp']

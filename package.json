@@ -25,15 +25,16 @@
   },
   "devDependencies": {
     "chai": "latest",
+    "coffee-script": "latest",
     "grunt-concurrent": "latest",
+    "grunt-contrib-copy": "^0.8.2",
     "grunt-contrib-watch": "latest",
     "grunt-mocha-test": "latest",
     "grunt-nodemon": "latest",
     "grunt-notify": "latest",
     "mocha": "latest",
     "superagent": "latest",
-    "supertest": "latest",
-    "coffee-script": "latest"
+    "supertest": "latest"
   },
   "engines": {
     "node": ">=4.1.2"
