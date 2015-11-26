@@ -5,6 +5,7 @@
   "dependencies": {
     "backbone": "latest",
     "body-parser": "latest",
+    "cors": "latest",
     "express": "latest",
     "grunt": "latest",
     "grunt-cli": "latest",
@@ -20,8 +21,7 @@
     "request": "latest",
     "sequelize": "latest",
     "socket.io": "latest",
-    "underscore": "latest",
-    "cors": "latest"
+    "underscore": "latest"
   },
   "devDependencies": {
     "chai": "latest",

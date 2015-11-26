@@ -43,7 +43,7 @@ module.exports = (grunt) ->
             'coffee-script/register'
             ->
               global.rootRequire = (name) ->
-                require(__dirname + '/tmp/src/' + name)
+                require(__dirname + '/tmp/' + name)
             ->
               global.appInit = rootRequire('./application').initApplication()
           ]
@@ -65,9 +65,9 @@ module.exports = (grunt) ->
 
     nodemon:
       server:
-        script: 'build/server.js'
+        script: 'server.js'
       options:
-        watch: ["build/server.js"]
+        watch: ['server.js']
 
     concurrent:
       serve: ['nodemon:server', 'watch:build']
@@ -76,7 +76,7 @@ module.exports = (grunt) ->
 
     execute:
       server:
-        src: ['build/server.js']
+        src: ['server.js']
 
     env:
       dev:

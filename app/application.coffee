@@ -15,7 +15,7 @@ initSocketIo = (app, server) ->
 
 initApplication = ->
   express = require 'express'
-  models = require '../../models'
+  models = require '../models'
   requestMiddleware = require './middleware/request'
 
   app = express()

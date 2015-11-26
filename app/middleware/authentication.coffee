@@ -1,6 +1,6 @@
 JWT = require 'jsonwebtoken'
 request = require 'request'
-models  = require '../../../models'
+models  = require '../../models'
 
 pendingUserQueryPromises = {}
 

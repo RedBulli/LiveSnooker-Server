@@ -1,5 +1,5 @@
 express = require 'express'
-models  = require '../../../models'
+models  = require '../../models'
 authMiddleware = require '../middleware/authentication'
 
 newFrame = (request) ->
