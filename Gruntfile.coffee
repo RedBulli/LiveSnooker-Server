@@ -15,7 +15,7 @@ module.exports = (grunt) ->
         files: [
           {
             expand: true
-            cwd: 'coffees'
+            cwd: 'app'
             src: ['**/*.coffee']
             dest: 'build'
             ext: '.js'
@@ -27,7 +27,7 @@ module.exports = (grunt) ->
         files: [
           {
             expand: true
-            cwd: 'coffees'
+            cwd: 'app'
             src: ['**/*.coffee']
             dest: 'tmp'
             ext: '.js'
@@ -51,10 +51,10 @@ module.exports = (grunt) ->
 
     watch:
       build:
-        files: 'coffees/**/*.coffee'
+        files: 'app/**/*.coffee'
         tasks: ['clean', 'coffee']
       spec:
-        files: ['coffees/**/*.coffee', 'spec/**/*.coffee']
+        files: ['app/**/*.coffee', 'spec/**/*.coffee']
         tasks: ['test']
 
     clean:
