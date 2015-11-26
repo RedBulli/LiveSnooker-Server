@@ -20,7 +20,8 @@
     "request": "latest",
     "sequelize": "latest",
     "socket.io": "latest",
-    "underscore": "latest"
+    "underscore": "latest",
+    "cors": "latest"
   },
   "devDependencies": {
     "chai": "latest",

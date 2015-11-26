@@ -1,9 +1,8 @@
 JWT = require 'jsonwebtoken'
 request = require 'request'
 models  = require '../../models'
-_ = require 'underscore'
 
-getOrCreateQueue = {}
+pendingUserQueryPromises = {}
 
 parseGoogleToken = (token, callback) ->
   request 'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=' + token, (error, response, body) ->
@@ -17,16 +16,16 @@ createUser = (email) ->
 
 getOrCreateUser = (authData) ->
   email = authData.email
-  unless getOrCreateQueue[email]
-    getOrCreateQueue[email] = models.User.find({where: {email: email}}).then (user) ->
+  unless pendingUserQueryPromises[email]
+    pendingUserQueryPromises[email] = models.User.find({where: {email: email}}).then (user) ->
       if user
         user
       else
         models.User.create(email: email)
     .then (user) ->
-      delete getOrCreateQueue[email]
+      delete pendingUserQueryPromises[email]
       user
-  getOrCreateQueue[email]
+  pendingUserQueryPromises[email]
 
 validateLeagueAuth = (leagueId, request, response, next) ->
   responseNotFound = ->

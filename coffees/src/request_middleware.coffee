@@ -1,21 +1,6 @@
 errors = require './errors'
 bodyParser = require 'body-parser'
 
-allowCrossDomain = (request, response, next) ->
-  response.header 'Access-Control-Allow-Origin', '*'
-  response.header(
-    'Access-Control-Allow-Methods',
-    'GET,PUT,POST,DELETE,OPTIONS,PATCH'
-  )
-  response.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Content-Length, X-Requested-With, X-AUTH-GOOGLE-ID-TOKEN'
-  )
-  if 'OPTIONS' == request.method
-    response.sendStatus 200
-  else
-    next()
-
 defaultHeaders = (request, response, next) ->
   response.header 'Content-Type', 'application/json; charset=utf-8'
   next()
@@ -36,7 +21,6 @@ jsonParser = (request, response, next) ->
       next()
 
 module.exports =
-  allowCrossDomain: allowCrossDomain
   defaultHeaders: defaultHeaders
   serverErrorHandling: serverErrorHandling
   jsonParser: jsonParser
