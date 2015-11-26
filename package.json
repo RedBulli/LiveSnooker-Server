@@ -46,7 +46,6 @@
   "licence": "MIT",
   "scripts": {
     "test": "node_modules/grunt-cli/bin/grunt test",
-    "prestart": "node_modules/grunt-cli/bin/grunt compile",
-    "start": "node build/server.js"
+    "start": "node_modules/grunt-cli/bin/grunt serve"
   }
 }

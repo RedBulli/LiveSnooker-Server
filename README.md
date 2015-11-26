@@ -1,21 +1,25 @@
 LiveSnooker-Server
 ==================
-Just running
+Installation
 ------------
 ```
-npm start
+npm install
 ```
 
-Development
------------
+Run development server
+------------
 ```
-grunt
+./grunt.sh serve
 ```
 
 Testing
 -------
 ```
-grunt test
-grunt test:unit
-grunt test:integration
+./grunt.sh test
+
+```
+Or
+```
+./grunt.sh tdd
+
 ```
