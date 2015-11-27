@@ -25,20 +25,22 @@ getCachedTokenInfo = (token, redis) ->
 
 cacheTokenInfo = (token, body, redis) ->
   key = tokenRedisKey(token)
-  redis.set(key, JSON.stringify(body))
-  redis.expire(key, body.expires_in)
+  redis.setAsync(key, JSON.stringify(body)).then ->
+    console.log "expires",  body.expires_in
+    redis.expireAsync(key, body.expires_in)
 
 getTokenInfo = (token, redis) ->
   new Promise (resolve, reject) ->
     getCachedTokenInfo(token, redis)
       .then (response) ->
         if response
+          console.log "cache hit!"
           resolve(JSON.parse(response))
         else
           requestTokenInfo(token)
             .then (response) ->
-              cacheTokenInfo(token, response, redis)
-              resolve(response)
+              cacheTokenInfo(token, response, redis).then ->
+                resolve(response)
             .catch (err) ->
               reject()
 

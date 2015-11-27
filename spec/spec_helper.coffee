@@ -19,8 +19,21 @@ $$ LANGUAGE plpgsql;
 createTruncateScript = ->
   models.sequelize.query(TRUNCATE_SCRIPT)
 
-cleanDatabase = (done) ->
-  models.sequelize.query('SELECT truncate_tables();').then -> done()
+cleanDatabase = ->
+  models.sequelize.query('SELECT truncate_tables();')
+
+cleanRedis = (done) ->
+  if process.env.REDIS_NAMESPACE
+    redisClient = $app.get('redisClient')
+    redisClient.keysAsync(process.env.REDIS_NAMESPACE + '*').then (keys) ->
+      if keys.length > 0
+        keysWithoutPrefix = _.map(keys, (key) -> key.replace(/^test:/, ''))
+        redisClient.delAsync(keysWithoutPrefix).then (res) ->
+          done()
+      else
+        done()
+  else
+    done()
 
 initApplication = (done) ->
   appInit.then (application) ->
@@ -33,20 +46,26 @@ googleTokenRequest = (token) ->
     .get('/oauth2/v2/tokeninfo')
     .query(id_token: token)
 
-mockGoogleTokenRequest = (token, email, status) ->
+mockGoogleTokenRequest = (token, email, opts) ->
+  opts = opts || {}
   response =
     issued_to: process.env.GOOGLE_CLIENT_ID,
     audience: process.env.GOOGLE_CLIENT_ID,
     user_id: '1234567890',
-    expires_in: 3277,
+    expires_in: opts['expires_in'] || 3277,
     email: email,
     verified_email: true
-  status = status || 200
+  status = opts['status'] || 200
   googleTokenRequest(token)
     .reply status, response
 
+cleanMockResponses = ->
+  nock.cleanAll()
+
 before initApplication
 afterEach cleanDatabase
+afterEach cleanRedis
+afterEach cleanMockResponses
 
 module.exports =
   mockGoogleTokenRequest: mockGoogleTokenRequest

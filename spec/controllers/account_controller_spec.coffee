@@ -35,13 +35,3 @@ describe 'Account controller', ->
           expect(res.body)
             .to.have.deep.property('user.email', 'test@example.com')
         .expect(200, done)
-
-    describe 'authentication middleware', ->
-      it 'caches the user data from Google', (done) ->
-        accountRequest().end ->
-          secondRequestMock = specHelper.mockGoogleTokenRequest(token, userEmail, 400)
-          accountRequest()
-            .expect ->
-              expect(secondRequestMock.isDone()).to.eql false
-            .expect(200, done)
-
