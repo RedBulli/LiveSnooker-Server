@@ -1,8 +1,7 @@
 request = require 'supertest'
-nock = require 'nock'
 expect = require('chai').expect
-require '../spec_helper'
 models = require '../../models'
+specHelper = require '../spec_helper'
 
 describe 'Account controller', ->
   describe 'without authentication', ->
@@ -13,17 +12,9 @@ describe 'Account controller', ->
 
   describe 'with authentication', ->
     token = '123456'
+    userEmail = 'test@example.com'
     beforeEach ->
-      nock('https://www.googleapis.com')
-        .get('/oauth2/v2/tokeninfo')
-        .query({id_token: token})
-        .reply 200,
-          issued_to: '3.apps.googleusercontent.com',
-          audience: '3.apps.googleusercontent.com',
-          user_id: '1234567890',
-          expires_in: 3277,
-          email: 'test@example.com',
-          verified_email: true
+      specHelper.mockGoogleTokenRequest(token, userEmail)
 
     it 'creates the user', (done) ->
       request($app)

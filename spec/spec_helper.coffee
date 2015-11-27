@@ -1,4 +1,6 @@
 models = require '../models'
+_ = require 'underscore'
+nock = require 'nock'
 
 TRUNCATE_SCRIPT = """
 CREATE OR REPLACE FUNCTION truncate_tables() RETURNS void AS $$
@@ -26,5 +28,21 @@ initApplication = (done) ->
     createTruncateScript().then ->
       done()
 
+mockGoogleTokenRequest = (token, email) ->
+  response =
+    issued_to: process.env.GOOGLE_CLIENT_ID,
+    audience: process.env.GOOGLE_CLIENT_ID,
+    user_id: '1234567890',
+    expires_in: 3277,
+    email: email,
+    verified_email: true
+  nock('https://www.googleapis.com')
+    .get('/oauth2/v2/tokeninfo')
+    .query({id_token: token})
+    .reply 200, response
+
 before initApplication
 afterEach cleanDatabase
+
+module.exports =
+  mockGoogleTokenRequest: mockGoogleTokenRequest
