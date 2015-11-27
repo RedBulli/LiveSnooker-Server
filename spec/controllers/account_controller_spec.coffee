@@ -2,6 +2,7 @@ request = require 'supertest'
 nock = require 'nock'
 expect = require('chai').expect
 require '../spec_helper'
+models = require '../../models'
 
 describe 'Account controller', ->
   describe 'without authentication', ->
@@ -21,8 +22,18 @@ describe 'Account controller', ->
           audience: '3.apps.googleusercontent.com',
           user_id: '1234567890',
           expires_in: 3277,
-          email: 'sampo.verkasalo@gmail.com',
+          email: 'test@example.com',
           verified_email: true
+
+    it 'creates the user', (done) ->
+      request($app)
+        .get '/account'
+        .set 'x-auth-google-id-token', token
+        .expect ->
+          models.User.count(where: {email: 'test@example.com'})
+            .then (count) ->
+              expect(count).to.eql 1
+        .expect(200, done)
 
     it 'returns the user', (done) ->
       request($app)
@@ -30,5 +41,5 @@ describe 'Account controller', ->
         .set 'x-auth-google-id-token', token
         .expect (res) ->
           expect(res.body)
-            .to.have.deep.property('user.email', 'sampo.verkasalo@gmail.com')
+            .to.have.deep.property('user.email', 'test@example.com')
         .expect(200, done)
