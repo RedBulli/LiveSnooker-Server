@@ -8,17 +8,39 @@ requestTokenInfo = (token) ->
   new Promise (resolve, reject) ->
     request 'https://www.googleapis.com/oauth2/v2/tokeninfo?id_token=' + token, (error, response, body) ->
       if !error && response.statusCode == 200
-        resolve(JSON.parse(body))
+        jsonBody = JSON.parse(body)
+        if jsonBody.audience == process.env.GOOGLE_CLIENT_ID
+          resolve(jsonBody)
+        else
+          reject()
       else
         reject()
 
-getUserData = (token) ->
+tokenRedisKey = (token) ->
+  'tokens:' + token
+
+getCachedTokenInfo = (token, redis) ->
+  key = tokenRedisKey(token)
+  redis.getAsync(key)
+
+cacheTokenInfo = (token, body, redis) ->
+  key = tokenRedisKey(token)
+  redis.set(key, JSON.stringify(body))
+  redis.expire(key, body.expires_in)
+
+getTokenInfo = (token, redis) ->
   new Promise (resolve, reject) ->
-    requestTokenInfo(token).then (userData) ->
-      if userData.audience == process.env.GOOGLE_CLIENT_ID
-        resolve(userData)
-      else
-        reject()
+    getCachedTokenInfo(token, redis)
+      .then (response) ->
+        if response
+          resolve(JSON.parse(response))
+        else
+          requestTokenInfo(token)
+            .then (response) ->
+              cacheTokenInfo(token, response, redis)
+              resolve(response)
+            .catch (err) ->
+              reject()
 
 createUser = (email) ->
   models.User.create(email: email)
@@ -64,7 +86,7 @@ validateLeagueAuth = (leagueId, request, response, next) ->
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
   if token
-    getUserData(token)
+    getTokenInfo(token, request.app.get('redisClient'))
       .then (googleUser) ->
         authData = {vendorUserId: googleUser.user_id, vendor: 'google', email: googleUser.email}
         getOrCreateUser(authData).then((user) ->

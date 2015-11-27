@@ -16,10 +16,13 @@ describe 'Account controller', ->
     beforeEach ->
       specHelper.mockGoogleTokenRequest(token, userEmail)
 
-    it 'creates the user', (done) ->
+    accountRequest = ->
       request($app)
         .get '/account'
         .set 'x-auth-google-id-token', token
+
+    it 'creates the user', (done) ->
+      accountRequest()
         .expect ->
           models.User.count(where: {email: 'test@example.com'})
             .then (count) ->
@@ -27,10 +30,18 @@ describe 'Account controller', ->
         .expect(200, done)
 
     it 'returns the user', (done) ->
-      request($app)
-        .get '/account'
-        .set 'x-auth-google-id-token', token
+      accountRequest()
         .expect (res) ->
           expect(res.body)
             .to.have.deep.property('user.email', 'test@example.com')
         .expect(200, done)
+
+    describe 'authentication middleware', ->
+      it 'caches the user data from Google', (done) ->
+        accountRequest().end ->
+          secondRequestMock = specHelper.mockGoogleTokenRequest(token, userEmail, 400)
+          accountRequest()
+            .expect ->
+              expect(secondRequestMock.isDone()).to.eql false
+            .expect(200, done)
+

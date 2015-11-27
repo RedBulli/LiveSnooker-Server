@@ -28,7 +28,12 @@ initApplication = (done) ->
     createTruncateScript().then ->
       done()
 
-mockGoogleTokenRequest = (token, email) ->
+googleTokenRequest = (token) ->
+  nock('https://www.googleapis.com')
+    .get('/oauth2/v2/tokeninfo')
+    .query(id_token: token)
+
+mockGoogleTokenRequest = (token, email, status) ->
   response =
     issued_to: process.env.GOOGLE_CLIENT_ID,
     audience: process.env.GOOGLE_CLIENT_ID,
@@ -36,10 +41,9 @@ mockGoogleTokenRequest = (token, email) ->
     expires_in: 3277,
     email: email,
     verified_email: true
-  nock('https://www.googleapis.com')
-    .get('/oauth2/v2/tokeninfo')
-    .query({id_token: token})
-    .reply 200, response
+  status = status || 200
+  googleTokenRequest(token)
+    .reply status, response
 
 before initApplication
 afterEach cleanDatabase

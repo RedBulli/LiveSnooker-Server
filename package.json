@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "backbone": "latest",
+    "bluebird": "^3.0.5",
     "body-parser": "latest",
     "cors": "latest",
     "express": "latest",
