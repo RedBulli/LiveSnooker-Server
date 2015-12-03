@@ -45,9 +45,6 @@ validatePlayersBelongToLeague = (request, response, next) ->
       else
         next()
 
-validateLeaguePrivileges = (request, response, next) ->
-  next() # TODO: Check if the user is in the league
-
 FrameScope = (request) ->
   models.Frame.scope({ method: ['inLeague', request.league.id]})
 
@@ -58,7 +55,7 @@ module.exports = ->
     FrameScope(request).findAll().then (frames) ->
       response.json(frames)
 
-  router.post '/', validateLeaguePrivileges, validateNewFrame, (request, response) ->
+  router.post '/', validateNewFrame, (request, response) ->
     frameData =
       LeagueId: request.league.id
       Player1Id: request.body["Player1Id"]

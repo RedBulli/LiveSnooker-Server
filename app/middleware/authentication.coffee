@@ -68,7 +68,7 @@ validateLeagueAuth = (leagueId, request, response, next) ->
   query = models.League.findOne where: {id: leagueId}
   query.then (league) ->
     unless league
-      return response.status(404).json(error: "Not found")
+      return responseNotFound()
     request.league = league
     if league.get('public')
       next()
