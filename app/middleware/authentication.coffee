@@ -108,7 +108,7 @@ validateLeagueModifyAuth = (request, response, next) ->
         next()
 
 jwtAuthentication = (request, response, next) ->
-  token = request.headers['x-auth-google-id-token']
+  token = request.headers['x-auth-google-id-token'] || request.query.id_token
   if token
     getTokenInfo(token, request.app.get('redisClient'))
       .then (googleUser) ->

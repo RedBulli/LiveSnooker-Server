@@ -9,7 +9,6 @@ module.exports = (app) ->
   router.delete '*', authMiddleWare.requireAuth
 
   app.use(router)
-  app.use(require('./streaming_api')())
   app.use('/account', require('./controllers/account_controller')())
   app.use('/leagues', require('./controllers/league_controller')())
   app.use('/leagues/:leagueId/frames', require('./controllers/frame_controller')())

@@ -1,6 +1,7 @@
 express = require 'express'
 models  = require '../../models'
 authMiddleware = require '../middleware/authentication'
+streamHandler = require './stream_handler'
 
 newFrame = (request) ->
   Frame = request.app.get('models').Frame
@@ -123,6 +124,9 @@ module.exports = ->
       response.status(200).json(request.frame)
     else
       response.status(400).json(error: "Player must be in the frame")
+
+  router.get '/:frameId/stream', (request, response) ->
+    streamHandler(request.frame.id, request, response)
 
   router.use('/:frameId/shots', require('./shot_controller')())
 

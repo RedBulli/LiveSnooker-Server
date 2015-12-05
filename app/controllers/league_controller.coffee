@@ -2,6 +2,7 @@ express = require 'express'
 models  = require '../../models'
 authMiddleware = require '../middleware/authentication'
 isEmail = require('./../utils').isEmail
+streamHandler = require './stream_handler'
 
 module.exports = ->
   router = express.Router()
@@ -88,5 +89,8 @@ module.exports = ->
         })
           .then -> response.status(204).json("")
           .catch (error) -> response.status(500).json(error: error)
+
+  router.get '/:leagueId/stream', (request, response) ->
+    streamHandler(request.league.id, request, response)
 
   router
