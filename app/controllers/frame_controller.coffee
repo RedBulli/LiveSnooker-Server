@@ -9,10 +9,8 @@ newFrame = (request) ->
 validateNewFrame = (request, response, next) ->
   if request.body["Player1Id"] == request.body["Player2Id"]
     response.status(400).json(error: "Player cannot play against self")
-    response.end()
   else if request.body["WinnerId"]
     response.status(400).json(error: "Cannot set winner before shots have been played")
-    response.end()
   else
     validatePlayersBelongToLeague request, response, () ->
       validatePlayersDontHaveUnfinishedFrames request, response, next
@@ -29,7 +27,6 @@ validatePlayersDontHaveUnfinishedFrames = (request, response, next) ->
   ).then (count) ->
     if count != 0
       response.status(400).json(error: "Players cannot have incomplete frames when creating a new frame")
-      response.end()
     else
       next()
 
@@ -41,7 +38,6 @@ validatePlayersBelongToLeague = (request, response, next) ->
     ).then (count) ->
       if count != 2
         response.status(400).json(error: "Player(s) do not belong to the given League")
-        response.end()
       else
         next()
 
@@ -83,7 +79,6 @@ module.exports = ->
       next()
     ).catch( ->
       response.status(400).json(error: 'cannot find user ' + request.params.frameId)
-      response.end()
     )
 
   router.get '/:frameId', (request, response) ->

@@ -19,7 +19,7 @@ describe 'League controller', ->
       models.League.create(name: 'Biklu').then (league) ->
         models.Admin.create
           UserEmail: userEmail
-          LeagueId: league.get('id')
+          LeagueId: league.id
 
     it "returns the user's leagues", (done) ->
       request($app)

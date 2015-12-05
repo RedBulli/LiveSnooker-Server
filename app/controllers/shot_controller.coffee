@@ -14,7 +14,6 @@ validateShotNumber = (request, response, next) ->
       nextShotNumber = parseInt(max) + 1
       if parseInt(request.body['shotNumber']) != nextShotNumber
         response.status(400).json(error: 'next shotNumber should be ' + nextShotNumber)
-        response.end()
       else
         next()
 

@@ -8,9 +8,6 @@ module.exports = (app) ->
   router.patch '*', authMiddleWare.requireAuth
   router.delete '*', authMiddleWare.requireAuth
 
-  router.all ['/leagues/:leagueId*'], (req, resp, next) ->
-    authMiddleWare.validateLeagueAuth(req.params.leagueId, req, resp, next)
-
   app.use(router)
   app.use(require('./streaming_api')())
   app.use('/account', require('./controllers/account_controller')())

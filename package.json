@@ -36,7 +36,7 @@
     "grunt-notify": "latest",
     "mocha": "latest",
     "nock": "^3.3.2",
-    "supertest": "latest"
+    "supertest": "1.0.1"
   },
   "engines": {
     "node": ">=4.2.2"

@@ -46,12 +46,32 @@ module.exports = ->
       else
         response.status(500).json(error: error)
 
+  setLeagueToRequest = (req, resp, next) ->
+    require('../middleware/authentication').setLeagueToRequest(req.params.leagueId, req, resp, next)
+
+  router.all ['/:leagueId*'], setLeagueToRequest
+
+  requireRead = (req, resp, next) ->
+    require('../middleware/authentication').validateLeagueReadAuth(req, resp, next)
+
+  requireWrite = (req, resp, next) ->
+    require('../middleware/authentication').validateLeagueModifyAuth(req, resp, next)
+
+  router.get ['/:leagueId*'], requireRead
+  router.post ['/:leagueId*'], requireWrite
+  router.put ['/:leagueId*'], requireWrite
+  router.delete ['/:leagueId*'], requireWrite
+  router.patch ['/:leagueId*'], requireWrite
+
   router.get '/:leagueId', (request, response) ->
     response.json(request.league)
 
   router.post '/:leagueId/admins', (request, response) ->
     if isEmail(request.body.UserEmail)
-      models.Admin.create(request.body)
+      models.Admin.create(
+        LeagueId: request.league.id
+        UserEmail: request.body["UserEmail"]
+      )
         .then (admin) -> response.status(201).json(admin)
         .catch (error) -> response.status(500).json(error: error)
     else
@@ -63,7 +83,7 @@ module.exports = ->
         response.status(400).json(error: "Cannot remove last admin")
       else
         models.Admin.destroy(where: {
-          LeagueId: request.params.id
+          LeagueId: request.league.id
           id: request.params.adminId
         })
           .then -> response.status(204).json("")

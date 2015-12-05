@@ -26,7 +26,6 @@ getCachedTokenInfo = (token, redis) ->
 cacheTokenInfo = (token, body, redis) ->
   key = tokenRedisKey(token)
   redis.setAsync(key, JSON.stringify(body)).then ->
-    console.log "expires",  body.expires_in
     redis.expireAsync(key, body.expires_in)
 
 getTokenInfo = (token, redis) ->
@@ -34,7 +33,6 @@ getTokenInfo = (token, redis) ->
     getCachedTokenInfo(token, redis)
       .then (response) ->
         if response
-          console.log "cache hit!"
           resolve(JSON.parse(response))
         else
           requestTokenInfo(token)
@@ -60,30 +58,54 @@ getOrCreateUser = (authData) ->
       user
   pendingUserQueryPromises[email]
 
-validateLeagueAuth = (leagueId, request, response, next) ->
-  responseNotFound = ->
-    response.status(404).json(error: 'Not found')
-    response.end()
+respondNotFound = (response) ->
+  response.status(404).json(error: 'Not found')
 
+respondUnauthorized = (response) ->
+  response.status(401).json(error: 'Unauthorized')
+
+respondForbidden = (response) ->
+  response.status(403).json(error: 'Forbidden')
+
+setLeagueToRequest = (leagueId, request, response, next) ->
   query = models.League.findOne where: {id: leagueId}
   query.then (league) ->
-    unless league
-      return responseNotFound()
-    request.league = league
-    if league.get('public')
+    if league
+      request.league = league
       next()
     else
-      unless request.user
-        responseNotFound()
+      respondNotFound(response)
+  query.catch -> respondNotFound(response)
+
+validateLeagueReadAuth = (request, response, next) ->
+  if request.league.get('public')
+    next()
+  else
+    unless request.user
+      respondUnauthorized(response)
+    else
+      models.Admin.count(
+        where: {UserEmail: request.user.email, LeagueId: request.league.id}
+      ).then (count) ->
+        if count == 0
+          respondForbidden(response)
+        else
+          next()
+
+validateLeagueModifyAuth = (request, response, next) ->
+  unless request.user
+    return respondUnauthorized(response)
+  else
+    models.Admin.count(
+      where:
+        UserEmail: request.user.email
+        LeagueId: request.league.id
+        write: true
+    ).then (count) ->
+      if count == 0
+        respondForbidden(response)
       else
-        models.Admin.count(
-          where: {UserEmail: request.user.email, LeagueId: leagueId}
-        ).then (count) ->
-          if count == 0
-            responseNotFound()
-          else
-            next()
-  query.catch responseNotFound
+        next()
 
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token']
@@ -98,7 +120,7 @@ jwtAuthentication = (request, response, next) ->
           console.error err
           response.status(500).json(error: "Internal server error")
       .catch ->
-        response.status(401).json(error: "Unauthorized")
+        respondUnauthorized(response)
   else
     next()
 
@@ -106,9 +128,11 @@ requireAuth = (request, response, next) ->
   if request.user
     next()
   else
-    response.status(401).json(error: "Unauthorized")
+    respondUnauthorized(response)
 
 module.exports =
   jwtAuthentication: jwtAuthentication
   requireAuth: requireAuth
-  validateLeagueAuth: validateLeagueAuth
+  validateLeagueReadAuth: validateLeagueReadAuth
+  validateLeagueModifyAuth: validateLeagueModifyAuth
+  setLeagueToRequest: setLeagueToRequest

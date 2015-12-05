@@ -6,7 +6,7 @@ defaultHeaders = (request, response, next) ->
 
 serverErrorHandling = (err, request, response, next) ->
   if err
-    console.error err
+    console.error err.stack
   response.sendStatus 500
 
 jsonParser = (request, response, next) ->
