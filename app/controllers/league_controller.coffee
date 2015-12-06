@@ -67,6 +67,13 @@ module.exports = ->
   router.get '/:leagueId', (request, response) ->
     response.json(request.league)
 
+  router.patch '/:leagueId', (request, response) ->
+    request.league.set('public', request.body['public'])
+    request.league.save()
+      .then ->
+        response.json(request.league)
+      .catch (error) -> response.status(500).json(error: error)
+
   router.post '/:leagueId/admins', (request, response) ->
     if isEmail(request.body.UserEmail)
       models.Admin.create(
