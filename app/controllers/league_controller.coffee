@@ -3,6 +3,7 @@ models  = require '../../models'
 authMiddleware = require '../middleware/authentication'
 isEmail = require('./../utils').isEmail
 streamHandler = require './stream_handler'
+_ = require 'underscore'
 
 module.exports = ->
   router = express.Router()
@@ -25,9 +26,22 @@ module.exports = ->
       where: { id: leagueId }
       include: leagueIncludes
 
-  router.get '/', authMiddleware.requireAuth, (request, response) ->
-    request.user.getLeagues(include: leagueIncludes)
-      .then (leagues) -> response.json(leagues)
+  router.get '/', (request, response) ->
+    queries = [
+      models.League.findAll(
+        where: {public: true},
+        include: leagueIncludes
+      )
+    ]
+    if request.user
+      queries.push request.user.getLeagues(include: leagueIncludes)
+
+    Promise.all(queries)
+      .then (results) ->
+        leagues = _.uniq(_.union(results[0] || [], results[1] || []), false, (league) ->
+          league.id
+        )
+        response.json(leagues)
       .catch (error) -> response.status(500).json(error: error)
 
   router.post '/', (request, response) ->
