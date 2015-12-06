@@ -79,9 +79,9 @@ module.exports = ->
       response.status(400).json(error: "Invalid email")
 
   router.delete '/:leagueId/admins/:adminId', (request, response) ->
-    request.league.getAdmins().then (admins) ->
-      if admins.length < 2
-        response.status(400).json(error: "Cannot remove last admin")
+    request.league.getAdmins(where: {write: true}).then (admins) ->
+      if admins.length < 2 && admins[0].id == request.params.adminId
+        response.status(400).json(error: "Cannot remove last write-access admin")
       else
         models.Admin.destroy(where: {
           LeagueId: request.league.id
@@ -89,6 +89,30 @@ module.exports = ->
         })
           .then -> response.status(204).json("")
           .catch (error) -> response.status(500).json(error: error)
+
+  router.patch '/:leagueId/admins/:adminId', (request, response) ->
+    models.Admin.findOne(where: {LeagueId: request.league.id, id: request.params.adminId})
+      .then (admin) ->
+        updateAdminWriteAccess = ->
+          admin.set('write', request.body['write'])
+          admin.save()
+            .then ->
+              response.status(200).json(admin)
+            .catch (error) ->
+              response.status(500).json(error: error)
+
+        if admin
+          unless request.body['write']
+            request.league.getAdmins(where: {write: true}).then (admins) ->
+              if admins.length < 2
+                response.status(400).json(error: "At least 1 admin has to have write access")
+              else
+                updateAdminWriteAccess()
+          else
+            updateAdminWriteAccess()
+        else
+          response.status(404).json(error: 'Not found')
+      .catch (error) -> response.status(500).json(error: error)
 
   router.get '/:leagueId/stream', (request, response) ->
     streamHandler(request.league.id, request, response)
