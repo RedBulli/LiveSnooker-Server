@@ -67,6 +67,55 @@ respondUnauthorized = (response) ->
 respondForbidden = (response) ->
   response.status(403).json(error: 'Forbidden')
 
+hasReadPrivileges = (league, user) ->
+  new Promise (resolve, reject) ->
+    if league.get('public')
+      resolve()
+    else if !user
+      reject()
+    else
+      models.Admin.count(
+        where: {UserEmail: user.email, LeagueId: league.id}
+      ).then (count) ->
+        if count == 0
+          reject()
+        else
+          resolve()
+
+hasWritePrivileges = (league, user) ->
+  new Promise (resolve, reject) ->
+    unless user
+      reject()
+    else
+      models.Admin.count(
+        where:
+          UserEmail: user.email
+          LeagueId: league.id
+          write: true
+      ).then (count) ->
+        if count == 0
+          reject()
+        else
+          resolve()
+
+validateLeagueReadAuth = (request, response, next) ->
+  hasReadPrivileges(request.league, request.user)
+    .then next
+    .catch ->
+      if request.user
+        respondForbidden(response)
+      else
+        respondUnauthorized(response)
+
+validateLeagueModifyAuth = (request, response, next) ->
+  hasWritePrivileges(request.league, request.user)
+    .then next
+    .catch ->
+      if request.user
+        respondForbidden(response)
+      else
+        respondUnauthorized(response)
+
 setLeagueToRequest = (leagueId, request, response, next) ->
   query = models.League.findOne where: {id: leagueId}
   query.then (league) ->
@@ -77,50 +126,20 @@ setLeagueToRequest = (leagueId, request, response, next) ->
       respondNotFound(response)
   query.catch -> respondNotFound(response)
 
-validateLeagueReadAuth = (request, response, next) ->
-  if request.league.get('public')
-    next()
-  else
-    unless request.user
-      respondUnauthorized(response)
-    else
-      models.Admin.count(
-        where: {UserEmail: request.user.email, LeagueId: request.league.id}
-      ).then (count) ->
-        if count == 0
-          respondForbidden(response)
-        else
-          next()
-
-validateLeagueModifyAuth = (request, response, next) ->
-  unless request.user
-    return respondUnauthorized(response)
-  else
-    models.Admin.count(
-      where:
-        UserEmail: request.user.email
-        LeagueId: request.league.id
-        write: true
-    ).then (count) ->
-      if count == 0
-        respondForbidden(response)
-      else
-        next()
+getOrCreateUserFromToken = (token, redis) ->
+  getTokenInfo(token, redis)
+    .then (googleUser) ->
+      authData = {vendorUserId: googleUser.user_id, vendor: 'google', email: googleUser.email}
+      getOrCreateUser(authData)
 
 jwtAuthentication = (request, response, next) ->
   token = request.headers['x-auth-google-id-token'] || request.query.id_token
   if token
-    getTokenInfo(token, request.app.get('redisClient'))
-      .then (googleUser) ->
-        authData = {vendorUserId: googleUser.user_id, vendor: 'google', email: googleUser.email}
-        getOrCreateUser(authData).then((user) ->
-          request.user = user
-          next()
-        ).catch (err) ->
-          console.error err
-          response.status(500).json(error: "Internal server error")
-      .catch ->
-        respondUnauthorized(response)
+    getOrCreateUserFromToken(token, request.app.get('redisClient'))
+      .then (user) ->
+        request.user = user
+        next()
+      .catch -> respondUnauthorized(response)
   else
     next()
 
@@ -136,3 +155,6 @@ module.exports =
   validateLeagueReadAuth: validateLeagueReadAuth
   validateLeagueModifyAuth: validateLeagueModifyAuth
   setLeagueToRequest: setLeagueToRequest
+  hasWritePrivileges: hasWritePrivileges
+  hasReadPrivileges: hasReadPrivileges
+  getOrCreateUserFromToken: getOrCreateUserFromToken

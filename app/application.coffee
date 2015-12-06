@@ -3,15 +3,9 @@ listen = (port) ->
     initApplication()
       .then (app) ->
         server = app.listen port
-        initSocketIo(app, server)
+        require('./video_socket_io')(app, server)
         resolve()
       .catch reject
-
-initSocketIo = (app, server) ->
-  app.io = require('socket.io')(server)
-  app.io.sockets.on 'connection', (socket) ->
-    socket.on 'message', (data) ->
-      socket.broadcast.emit('message', data)
 
 initApplication = ->
   express = require 'express'
