@@ -19,6 +19,9 @@ module.exports = ->
       LeagueId: request.league.id
       name: request.body["name"]
 
+    if request.body["id"]
+      playerData.id = request.body["id"]
+
     models.Player.create(playerData).then((player) ->
       data =
         event: "newPlayer"
