@@ -46,6 +46,9 @@ module.exports = ->
       response.status(400).json(error: 'cannot find player ' + request.params.id)
     )
 
+  router.get '/:id', (request, response) ->
+    response.json(request.player)
+
   router.delete '/:id', (request, response) ->
     request.player.set("deleted", true)
     request.player.save()
