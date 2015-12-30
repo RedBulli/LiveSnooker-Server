@@ -13,3 +13,4 @@ module.exports = (app) ->
   app.use('/leagues', require('./controllers/league_controller')())
   app.use('/leagues/:leagueId/frames', require('./controllers/frame_controller')())
   app.use('/leagues/:leagueId/players', require('./controllers/player_controller')())
+  app.use('/leagues/:leagueId/players/:playerId/stats', require('./controllers/stats_controller')())

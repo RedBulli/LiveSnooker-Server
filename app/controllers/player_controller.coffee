@@ -36,7 +36,7 @@ module.exports = ->
         response.status(500).json(error: error)
     )
 
-  router.all '/:id/:op?', (request, response, next) ->
+  router.all '/:id*', (request, response, next) ->
     PlayersScope(request).findOne(
       where: {id: request.params.id}
     ).then((player) ->
