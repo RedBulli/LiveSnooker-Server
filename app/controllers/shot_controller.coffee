@@ -1,6 +1,7 @@
 express = require 'express'
 models  = require '../../models'
 authMiddleware = require '../middleware/authentication'
+_ = require 'underscore'
 
 newShot = (request) ->
   Shot = request.app.get('models').Shot
@@ -17,6 +18,12 @@ validateShotNumber = (request, response, next) ->
       else
         next()
 
+validatePlayerBelongsToFrame = (request, response, next) ->
+  if _.contains([request.frame.Player1Id, request.frame.Player2Id], request.body["PlayerId"])
+    next()
+  else
+    response.status(400).json(error: "Player doesn't belong to the frame")
+
 ShotScope = (request) ->
   models.Shot.scope({ method: ['inFrame', request.frame.id]})
 
@@ -27,7 +34,7 @@ module.exports = ->
     ShotScope(request).findAll().then (shots) ->
       response.json(shots)
 
-  router.post '/', validateShotNumber, (request, response) ->
+  router.post '/', validateShotNumber, validatePlayerBelongsToFrame, (request, response) ->
     shotData =
       FrameId: request.frame.id
       PlayerId: request.body["PlayerId"]
@@ -49,7 +56,7 @@ module.exports = ->
         response.status(500).json(error: error)
 
   router.get '/:id', (request, response) ->
-    models.Shot.find({
+    ShotScope(request).find({
       where: {id: request.params.id},
       include: [
         { model: models.Player },
@@ -59,7 +66,7 @@ module.exports = ->
       response.json(shot)
 
   router.delete '/:id', (request, response) ->
-    models.Shot.findOne({
+    ShotScope(request).findOne({
       where: {id: request.params.id},
     }).then (shot) ->
       models.Shot.max('shotNumber', { where: {FrameId: shot.FrameId} }).then (max) ->

@@ -66,7 +66,7 @@ module.exports = ->
       request.app.get('redisClient').publish(frame.LeagueId, JSON.stringify(data))
       response.status(201).json(frame)
 
-  router.all '/:frameId/:op?', (request, response, next) ->
+  router.all '/:frameId*', (request, response, next) ->
     FrameScope(request).findOne(
       where: {id: request.params.frameId},
       include: [
@@ -80,7 +80,7 @@ module.exports = ->
       request.frame = frame
       next()
     ).catch( ->
-      response.status(400).json(error: 'cannot find user ' + request.params.frameId)
+      response.status(400).json(error: 'cannot find frame ' + request.params.frameId)
     )
 
   router.get '/:frameId', (request, response) ->
