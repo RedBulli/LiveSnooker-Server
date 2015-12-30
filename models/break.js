@@ -5,7 +5,7 @@ module.exports = function(Sequelize, DataTypes) {
       allowNull: false,
       unique: 'breakStartShotNumberFrame'
     },
-    showNumberEnd: {
+    shots: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

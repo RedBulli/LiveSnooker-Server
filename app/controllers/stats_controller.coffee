@@ -2,8 +2,11 @@ express = require 'express'
 models  = require '../../models'
 _ = require 'underscore'
 
-getAllShotsForPlayer = (player) ->
-  models.Shot.findAll({where: {PlayerId: player.id}})
+getAllBreaksForPlayer = (player) ->
+  models.Break.findAll
+    where: {PlayerId: player.id}
+    include: [{ model: models.Frame }]
+    order: [['id', 'ASC']]
 
 getOverallStats = (player) ->
   intKeys = ['sum_points', 'pots', 'misses']
@@ -28,12 +31,8 @@ module.exports = ->
 
   router.get '/', (request, response) ->
     getOverallStats(request.player).then (stats) ->
-      response.json
-        player: request.player
-        stats: stats
+      response.json stats
 
   router.get '/full', (request, response) ->
-    getAllShotsForPlayer(request.player).then (shots) ->
-      response.json
-        player: request.player
-        shots: shots
+    getAllBreaksForPlayer(request.player).then (shots) ->
+      response.json shots
