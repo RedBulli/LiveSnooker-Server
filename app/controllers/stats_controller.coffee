@@ -2,7 +2,7 @@ express = require 'express'
 models  = require '../../models'
 _ = require 'underscore'
 
-frameStatKeys = [
+frameSumKeys = [
   'totalPoints',
   'potAttempts',
   'safetyAttempts',
@@ -50,9 +50,11 @@ getFrameStats = (player) ->
     order: [['id', 'ASC']]
 
 getOverallStats = (player) ->
+  attributes = _.map(frameSumKeys, (key) ->
+    [models.sequelize.fn('SUM', models.sequelize.col(key)), key]
+  )
+  attributes.push [models.sequelize.fn('MAX', models.sequelize.col('biggestBreak')), 'biggestBreak']
   models.FrameStats.find(
     where: { PlayerId: player.id }
-    attributes: _.map(frameStatKeys, (key) ->
-      [models.sequelize.fn('SUM', models.sequelize.col(key)), key]
-    )
+    attributes: attributes
   ).then (result) -> _.mapObject(result.dataValues, parseInt)
