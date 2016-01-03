@@ -2,7 +2,7 @@ express = require 'express'
 models  = require '../../models'
 authMiddleware = require '../middleware/authentication'
 streamHandler = require './stream_handler'
-calculateBreaks = require '../lib/calculate_breaks'
+calculateFrameStats = require '../lib/calculate_frame_stats'
 
 newFrame = (request) ->
   Frame = request.app.get('models').Frame
@@ -103,7 +103,7 @@ module.exports = ->
     else
       winnerId = request.body["WinnerId"]
       if winnerId in [request.frame.Player1Id, request.frame.Player2Id]
-        calculateBreaks(request.frame)
+        calculateFrameStats(request.frame)
           .then ->
             request.frame.set('WinnerId', winnerId)
             request.frame.set('endedAt', new Date())
@@ -114,6 +114,7 @@ module.exports = ->
             request.app.get('redisClient').publish(request.frame.LeagueId, JSON.stringify(data))
             response.status(200).json(request.frame)
           .catch (error) ->
+            console.error(error)
             response.status(500).json({message: error})
       else
         response.status(400).json(error: "WinnerId is not a player in this frame")
