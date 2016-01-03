@@ -74,6 +74,8 @@ module.exports = (grunt) ->
     execute:
       server:
         src: ['server.js']
+      calculateStats:
+        src: ['scripts/recalculate_stats.js']
 
     env:
       dev:
@@ -108,6 +110,12 @@ module.exports = (grunt) ->
       grunt.task.run(['env:production', 'coffee:build', 'execute:server'])
     else
       grunt.task.run(['env:dev', 'coffee:build', 'concurrent:serve'])
+
+  grunt.registerTask 'stats', (target) ->
+    if target == 'production'
+      grunt.task.run ['env:production', 'compile', 'execute:calculateStats']
+    else
+      grunt.task.run ['env:dev', 'compile', 'execute:calculateStats']
 
   # Default task(s).
   grunt.registerTask('default', ['test', 'coffee:build', 'serve'])
