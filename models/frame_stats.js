@@ -31,6 +31,10 @@ module.exports = function(Sequelize, DataTypes) {
     failPoints: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    biggestBreak: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
   };
   var FrameStats = Sequelize.define('FrameStats', schema, {

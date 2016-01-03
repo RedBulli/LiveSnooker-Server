@@ -4,9 +4,10 @@ _ = require 'underscore'
 module.exports = (frame) ->
   findAllShots(frame).then (shots) ->
     models.sequelize.transaction (transaction) ->
+      breaks = calculateBreaks(shots)
       Promise.all([
-        saveBreakModels(calculateBreaks(shots), transaction),
-        saveFrameStats(frame, calculateFrameStats(frame, shots), transaction)
+        saveBreakModels(breaks, transaction),
+        saveFrameStats(frame, calculateFrameStats(frame, shots, breaks), transaction)
       ])
 
 findAllShots = (frame) ->
@@ -29,7 +30,6 @@ saveFrameStats = (frame, frameStats, transaction) ->
       FrameId: frame.id
     })
   )
-  console.log("stats", stats)
   Promise.all([
     models.FrameStats.create(stats[0], {transaction: transaction}),
     models.FrameStats.create(stats[1], {transaction: transaction})
@@ -52,7 +52,7 @@ calculateBreaks = (shots) ->
     memo
   , [])
 
-calculateFrameStats = (frame, shots) ->
+calculateFrameStats = (frame, shots, breaks) ->
   frameStats = _.reduce(shots, (memo, shot) ->
     playerStats = memo[shot.PlayerId]
 
@@ -78,7 +78,19 @@ calculateFrameStats = (frame, shots) ->
     memo
   , initialStats(frame))
   delete frameStats.previousShotSafetyBy
+  biggestBreaks = calculateBiggestBreaks(frame, breaks)
+  frameStats[frame.Player1Id].biggestBreak = biggestBreaks[frame.Player1Id]
+  frameStats[frame.Player2Id].biggestBreak = biggestBreaks[frame.Player2Id]
   frameStats
+
+calculateBiggestBreaks = (frame, breaks) ->
+  init = {}
+  init[frame.Player1Id] = 0
+  init[frame.Player2Id] = 0
+  _.reduce(breaks, (memo, breakObj) ->
+    memo[breakObj.PlayerId] = breakObj.points if memo[breakObj.PlayerId] < breakObj.points
+    memo
+  , init);
 
 initialStats = (frame) ->
   stats = {
