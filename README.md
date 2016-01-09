@@ -1,5 +1,12 @@
 LiveSnooker-Server
 ==================
+
+Dependencies
+------------
+* PostgreSQL >= 9.4
+* Redis >= 3.0
+* Node >=4.2.2
+
 Installation
 ------------
 ```
