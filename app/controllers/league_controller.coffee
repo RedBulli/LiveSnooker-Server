@@ -79,7 +79,8 @@ module.exports = ->
   router.patch ['/:leagueId*'], requireWrite
 
   router.get '/:leagueId', (request, response) ->
-    response.json(request.league)
+    findLeague(request.league.id).then (league) ->
+      response.json(league)
 
   router.patch '/:leagueId', (request, response) ->
     request.league.set('public', request.body['public'])
