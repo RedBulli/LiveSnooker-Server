@@ -79,14 +79,22 @@ module.exports = ->
   router.patch ['/:leagueId*'], requireWrite
 
   router.get '/:leagueId', (request, response) ->
-    findLeague(request.league.id).then (league) ->
-      response.json(league)
+    findLeague(request.league.id)
+      .then (league) ->
+        response.json(league)
+      .catch (error) -> response.status(500).json(error: error)
 
   router.patch '/:leagueId', (request, response) ->
     request.league.set('public', request.body['public'])
     request.league.save()
       .then ->
         response.json(request.league)
+      .catch (error) -> response.status(500).json(error: error)
+
+  router.get '/:leagueId/admins', (request, response) ->
+    request.league.getAdmins(where: {write: true})
+      .then (admins) ->
+        response.json(admins)
       .catch (error) -> response.status(500).json(error: error)
 
   router.post '/:leagueId/admins', (request, response) ->
