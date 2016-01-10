@@ -14,11 +14,6 @@ module.exports = function(Sequelize, DataTypes) {
       indexes: [
         { unique: 'leaguePlayerName', fields: ['name', 'LeagueId'], where: { deleted: false } }
       ],
-      defaultScope: {
-        where: {
-          deleted: false
-        }
-      },
       scopes: {
         inLeague: function(leagueId) {
           return { where: { LeagueId: leagueId } };
