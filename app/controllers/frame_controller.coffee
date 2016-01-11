@@ -59,6 +59,9 @@ module.exports = ->
       Player1Id: request.body["Player1Id"]
       Player2Id: request.body["Player2Id"]
 
+    if request.body["id"]
+      frameData.id = request.body["id"]
+
     models.Frame.create(frameData).then (frame) ->
       data =
         event: "frameStart"
