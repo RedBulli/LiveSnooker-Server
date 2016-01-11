@@ -92,7 +92,7 @@ module.exports = ->
       .catch (error) -> response.status(500).json(error: error)
 
   router.get '/:leagueId/admins', (request, response) ->
-    request.league.getAdmins(where: {write: true})
+    request.league.getAdmins()
       .then (admins) ->
         response.json(admins)
       .catch (error) -> response.status(500).json(error: error)
