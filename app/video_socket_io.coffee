@@ -14,11 +14,14 @@ module.exports = (app, server) ->
     else
       models.League.findOne(where: {id: socket.handshake.query.league_id})
         .then (league) ->
-          if (league)
-            authMiddleware.getOrCreateUserFromToken(socket.handshake.query.id_token, redisClient)
-              .then (user) ->
-                next()
-              .catch respondSocketError.bind(null, next)
+          if league
+            if league.public
+              next()
+            else
+              authMiddleware.getOrCreateUserFromToken(socket.handshake.query.id_token, redisClient)
+                .then (user) ->
+                  next()
+                .catch respondSocketError.bind(null, next)
           else
             respondSocketError(next)
         .catch respondSocketError.bind(null, next)
